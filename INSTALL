@@ -1,0 +1,44 @@
+
+APPLICATION ENVIRONMENT:
+- ruby 1.8.7 (2011-06-30 patchlevel 352) [x86_64-linux]
+- GNU bash, version 4.1.2(1)-release (x86_64-redhat-linux-gnu)
+- Red Hat Enterprise Linux Server release 6.3 (Santiago)
+- 2.6.32-279.11.1.el6.x86_64 #1 SMP Sat Sep 22 07:10:26 EDT 2012 x86_64 x86_64 x86_64 GNU/Linux
+- https://github.com/redbox-mint/redbox-build-dev-handle/tree/redbox-handle-curation-demo-1.5.1
+- https://github.com/redbox-mint/mint-build-dev-handle/tree/mint-handle-curation-demo-1.5.1
+
+If you cannot install the above ruby version to your Unix/Linux
+operating system from source or via your normal package management 
+system, consider using Ruby Version Manager at https://rvm.io.
+(Similarly, I understand for MS Windows you could consider pik at
+https://github.com/vertiginous/pik.)
+
+Another option which may be possible under Windows is to use Cygwin.
+
+INSTALLATION:
+- Assumptions
+  * That you are using a Linux, Unix or Unix-like environment similar to that described under APPLICATION ENVIRONMENT.
+  * You have ReDBox or Mint or both web apps installed.
+  * Published metadata from the above apps result in Handle.net persistent identifiers.
+  * That the user who runs this program has permission to read from the ReDBox and Mint OAI-PMH RIF-CS URLs. This usually means that there are no firewall rules or Apache access controls preventing access to those URLs from the IP address upon which this program is running.
+  * That the user who runs this program has permission to write files (static web pages) into the Apache (or other web server) web root directory.
+
+- Download from github
+- Checkout latest version/tag
+- Update config for your site
+  * BIN_DIR in the script rif2website.sh
+  * BIN_DIR, IMAGES_CSS_TARBALL, HOST, VHOST, WWW_PARENT
+    in the script rif2website_wrap.sh
+  * create an html template for:
+    - your individual metadata web page (use the demo template initially)
+    - your summary web page (use the demo template initially)
+  * values for the following Config[] keys in etc/conf_main.rb:
+    - :html_template_filename
+    - :html_summary_template_filename
+    - :ands_rda_url_prefix
+    - 2x :dest_root_dir
+    - 2x :url_str_rifcs (if this script is being run on a different host than the ReDBox-Mint server)
+- If required update rules for your site (however the default rules will probably be suitable)
+
+EXAMPLES:
+
