@@ -59,16 +59,7 @@ Windows operating system, it may be feasible under 2 scenarios.
 3. EXAMPLES
 
 
-3.1 CRON JOB EXAMPLE
-
-After installing and testing this app (see the sample installation documentation later in this section)
-you can run a scheduled job (cron job) with a configuration similar to that below.
-
-  # Run job every hour from 8:20-18:20 Mon-Fri. Write stdout/stderr to a log file.
-  20 8-18 * * 1-5 $HOME/opt/rif2website/rif2website_wrap.sh >> $HOME/opt/rif2website/rif2website_wrap.log 2>&1
-
-
-3.2 SAMPLE INSTALLATION USING A TEMPLATE WITHOUT EXTERNAL CSS
+3.1 SAMPLE INSTALLATION USING A TEMPLATE WITHOUT EXTERNAL CSS
 
 The purpose of this sample is to:
  - show some of the important configuration options
@@ -93,8 +84,8 @@ Scenario:
      the record's actual OID by ReDBox-Mint during curation
  - Assumes you have at least one published record in ReDBox and at least one
    published record in Mint, hence the records are visible locally (eg. via wget) at:
-     http://localhost:9000/redbox/published/feed/oai
-     http://localhost:9001/mint/published/feed/oai
+     http://localhost:9000/redbox/published/feed/oai?verb=ListRecords&metadataPrefix=rif
+     http://localhost:9001/mint/published/feed/oai?verb=ListRecords&metadataPrefix=rif
    or perhaps via a web browser at:
      https://REDBOX_VHOST/redbox/published/feed/oai?verb=ListRecords&metadataPrefix=rif
      https://MINT_VHOST/mint/published/feed/oai?verb=ListRecords&metadataPrefix=rif
@@ -120,7 +111,7 @@ mkdir ~/opt
 git clone https://github.com/grantj-re3/FlindersRedbox-rif2website.git ~/opt/rif2website
 cd ~/opt/rif2website
 
-# If you want a particular release:
+# If you want a particular version
 git tag # List tagged releases
 git checkout ... # Checkout the desired release
 
@@ -149,8 +140,6 @@ In script rif2website_wrap.sh:
 Confirm html template etc/metadata_record.tpl.html exists.
 
 In etc/conf_main.rb:
- - values for the following Config[] keys in etc/conf_main.rb:
-
  - In the "Config" hash, confirm the following key-value assignments:
      :html_template_filename => "#{ENV['HOME']}/opt/rif2website/etc/metadata_record.tpl.html",
      :html_summary_template_filename => "#{ENV['HOME']}/opt/rif2website/etc/metadata_record.tpl.html",
@@ -176,22 +165,22 @@ Examine the results:
      /var/www/andsdevpub/md/r/123456789.html  # Assumes 123456789 is an OID of a published ReDBox record
      /var/www/andsdevpub/md/m/index.html
      /var/www/andsdevpub/md/m/987654321.html  # Assumes 987654321 is an OID of a published Mint record
- - Check that the contents of the files seem reasonable. All
-   tags of the form <!-- [[TAG_...]] --> should have been replaced
-   with RIF-CS or other contents, so should not exist in the above
-   website files.
- - If the files exist and have reasonable contents, check that they
+ - Check that the content of the files seems reasonable. All
+   html-commented-tags of the form <!-- [[TAG_...]] --> should 
+   have been replaced with RIF-CS or other contents, so should 
+   not exist in the above website .html files.
+ - If the files exist and have reasonable content, check that they
    are available to the public via a web broswer at URLs:
      http://MY_VHOST/md/r/index.html
      http://MY_VHOST/md/r/123456789.html  # Assumes 123456789 is an OID of a published ReDBox record
      http://MY_VHOST/md/m/index.html
      http://MY_VHOST/md/m/987654321.html  # Assumes 987654321 is an OID of a published Mint record
  - Once all is configured and running as desired, set up a cron job
-   as given in the Examples section.
+   as given in this Examples section.
  - Celebrate!
 
 
-3.3 SAMPLE INSTALLATION USING A TEMPLATE WITH EXTERNAL CSS
+3.2 SAMPLE INSTALLATION USING A TEMPLATE WITH EXTERNAL CSS
 
 The purpose of this sample is to:
  - show the same important configuration options as shown above
@@ -208,6 +197,15 @@ Instructions: Identical to the above instructions with the following exception.
 # - an html template (obtained from a free CSS zip file)
 # - an image/CSS tarball (of which the contents was obtained from the same zip file)
 ln -s etc_sample_css etc
+
+
+3.3 CRON JOB EXAMPLE
+
+After installing and testing this app (see the sample installation documentation above)
+you can run a scheduled job (cron job) with a configuration similar to that below.
+
+  # Run job every hour from 8:20-18:20 Mon-Fri. Write stdout/stderr to a log file.
+  20 8-18 * * 1-5 $HOME/opt/rif2website/rif2website_wrap.sh >> $HOME/opt/rif2website/rif2website_wrap.log 2>&1
 
 
 3.4 CUSTOMISING YOUR WEB PAGE CONTENT
@@ -228,7 +226,9 @@ To change substitution text associated with the following tags:
  - TAG_PAGE_HEADING
  - TAG_LAST_UPDATED
 
-1) For individual web pages (describing individual RIF-CS records) update:
+then follow the guidelines below.
+
+1) For individual web pages (each describing an individual RIF-CS record) update:
    File:   outwebpage.rb
    Class:  OutWebPage
    Method: to_s_html()
@@ -270,5 +270,6 @@ To create a page which has branding suitable for your organisation, you need to:
 Notes:
  - HTML template files are viewable via your web browser (with or without
    html-commented-tags added) and have a .html file extension to assist with viewing.
-
+ - Currently there is no feature to display odd and even lines of table
+   content using different styles.
 
