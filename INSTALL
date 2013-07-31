@@ -24,11 +24,16 @@ Windows operating system, it may be feasible under 2 scenarios.
 
 2.1 ASSUMPTIONS
 
-  * That you are using a Linux, Unix or Unix-like environment similar to that described under APPLICATION ENVIRONMENT.
+  * That you are using a Linux, Unix or Unix-like environment similar to that
+    described under APPLICATION ENVIRONMENT.
   * You have ReDBox or Mint or both web apps installed.
   * Published metadata from the above apps result in Handle.net persistent identifiers.
-  * That the user who runs this program has permission to read from the ReDBox and Mint OAI-PMH RIF-CS URLs. This usually means that there are no firewall rules or Apache access controls preventing access to those URLs from the IP address upon which this program is running.
-  * That the user who runs this program has permission to write files (static web pages) into the Apache (or other web server) web root directory.
+  * That the user who runs this program has permission to read from the ReDBox
+    and Mint OAI-PMH RIF-CS URLs. This usually means that there are no firewall
+    rules or Apache access controls preventing access to those URLs from the IP
+    address upon which this program is running.
+  * That the user who runs this program has permission to write files (static web
+    pages) into the Apache (or other web server) web root directory.
 
 
 2.2 INSTRUCTIONS
@@ -65,7 +70,14 @@ you can run a scheduled job (cron job) with a configuration similar to that belo
 
 3.2 SAMPLE INSTALLATION USING A TEMPLATE WITHOUT EXTERNAL CSS
 
+The purpose of this sample is to:
+ - show some of the important configuration options
+ - use a very simple html template to demonstrate TAG substitution
+ - have little concern regarding the prettiness of resulting web pages
+
+
 Scenario:
+
  - A Handle.net server has been installed and is available for use by ReDBox and Mint.
  - ReDBox and Mint have been installed and configured to create a handle during curation.
  - The appropriate ReDBox and Mint data source json files have been configured to point
@@ -101,6 +113,7 @@ Scenario:
  - Static pages will point to the harvested versions of the record in
    the RDA (Research Data Australia) Demo environment.
 
+
 Instructions:
 
 mkdir ~/opt
@@ -113,7 +126,8 @@ git checkout ... # Checkout the desired release
 
 # Read files INSTALL LICENSE README*
 
-# Symlink (or copy or rename) the etc_sample_nocss directory so that the contents appears to be in the etc directory.
+# Symlink (or copy or rename) the etc_sample_nocss directory so that the contents
+# appears to be in the etc directory.
 # In addition to configuration and rules files, this directory contains:
 # - a very simple html template
 # - an image/CSS tarball which is empty
@@ -175,4 +189,86 @@ Examine the results:
  - Once all is configured and running as desired, set up a cron job
    as given in the Examples section.
  - Celebrate!
+
+
+3.3 SAMPLE INSTALLATION USING A TEMPLATE WITH EXTERNAL CSS
+
+The purpose of this sample is to:
+ - show the same important configuration options as shown above
+ - use a more complicated html template (but with TAG substitution identical to the above)
+ - pay more attention to creating pretty web pages
+
+Scenario: Identical to the above scenario.
+
+Instructions: Identical to the above instructions with the following exception.
+
+# Symlink (or copy or rename) the etc_sample_css directory so that the contents
+# appears to be in the etc directory.
+# In addition to configuration and rules files, this directory contains:
+# - an html template (obtained from a free CSS zip file)
+# - an image/CSS tarball (of which the contents was obtained from the same zip file)
+ln -s etc_sample_css etc
+
+
+3.4 CUSTOMISING YOUR WEB PAGE CONTENT
+
+Web pages are created by substituting special text within
+an html template (eg. etc/metadata_record.tpl.html) with
+other text derived from the program (eg. RIF-CS content).
+
+The text which will be replaced consists of html-commented-tags
+such as:
+  <!-- [[TAG_PAGE_TITLE]] -->
+
+This html-commented-tag might be replaced with text such as:
+  "Research metadata record"
+
+To change substitution text associated with the following tags:
+ - TAG_PAGE_TITLE
+ - TAG_PAGE_HEADING
+ - TAG_LAST_UPDATED
+
+1) For individual web pages (describing individual RIF-CS records) update:
+   File:   outwebpage.rb
+   Class:  OutWebPage
+   Method: to_s_html()
+   Hash:   tpl_tag_repl_strs
+
+2) For the summary (index.html) page, update:
+   File:   rif2website.rb
+   Class:  RifToWebsite
+   Method: self.to_s_html()
+   Hash:   tpl_tag_repl_strs
+
+Changing substitution text for other tags is beyond the scope of
+this document.
+
+
+3.4 CUSTOMISING YOUR WEB PAGE BRANDING
+
+To create a page which has branding suitable for your organisation, you need to:
+
+1) Create (or copy) an html page (ie. the html template) suitable for storing 
+   metadata in a table. The template shall be placed in the application's "etc"
+   directory. The resulting webpages shall reside in a configurable filesystem 
+   location (eg. the /var/www/andsdevpub/md/m directory in the Mint examples above).
+
+2) Any image and CSS files required for the template are:
+   - expected to be grouped into a small number of directories 
+   - compressed into a tarball (eg. etc/images_css.tar.gz)
+   - expected to be untarred into the same configurable filesystem location
+     (eg. the /var/www/andsdevpub/md/m directory in the Mint examples above)
+
+   If your html template points to images/CSS at a common URL for your whole
+   institution, then you do not need to store and untar any image/CSS files.
+   However, it is recommended to keep image/CSS files under the control of
+   the same person/group who supports this program and template.
+
+3) Five html-commented-tags placed appropriately within the template. (See
+   the sample templates, etc/metadata_record.tpl.html).
+
+Notes:
+ - HTML template files are viewable via your web browser (with or without
+   html-commented-tags added) and have a .html file extension to assist with viewing.
+
 
