@@ -1,27 +1,37 @@
+1. APPLICATION ENVIRONMENT
 
-APPLICATION ENVIRONMENT:
 - ruby 1.8.7 (2011-06-30 patchlevel 352) [x86_64-linux]
 - GNU bash, version 4.1.2(1)-release (x86_64-redhat-linux-gnu)
 - Red Hat Enterprise Linux Server release 6.3 (Santiago)
 - 2.6.32-279.11.1.el6.x86_64 #1 SMP Sat Sep 22 07:10:26 EDT 2012 x86_64 x86_64 x86_64 GNU/Linux
-- https://github.com/redbox-mint/redbox-build-dev-handle/tree/redbox-handle-curation-demo-1.5.1
-- https://github.com/redbox-mint/mint-build-dev-handle/tree/mint-handle-curation-demo-1.5.1
+- ReDBox v1.5.1 & 1.6.1; https://github.com/redbox-mint/redbox-build-dev-handle/tree/redbox-handle-curation-demo-1.5.1
+- Mint v1.5.1 & 1.6.1; https://github.com/redbox-mint/mint-build-dev-handle/tree/mint-handle-curation-demo-1.5.1
+- Handle.net version 7.1; http://www.handle.net/download.html
 
 If you cannot install the above ruby version to your Unix/Linux
 operating system from source or via your normal package management 
 system, consider using Ruby Version Manager at https://rvm.io.
-(Similarly, I understand for MS Windows you could consider pik at
-https://github.com/vertiginous/pik.)
 
-Another option which may be possible under Windows is to use Cygwin.
+This software has not been designed to run under the Microsoft
+Windows operating system, it may be feasible under 2 scenarios.
+ - Install Cygwin (see http://www.cygwin.com) then run ruby and bash scripts under that environment.
+ - Install Ruby 1.8.7 (I understand pik at https://github.com/vertiginous/pik may be useful to install
+   a particular version) then rewrite shell scripts in some Windows language (eg. as .BAT scripts)
 
-INSTALLATION:
-- Assumptions
+
+2. INSTALLATION
+
+
+2.1 ASSUMPTIONS
+
   * That you are using a Linux, Unix or Unix-like environment similar to that described under APPLICATION ENVIRONMENT.
   * You have ReDBox or Mint or both web apps installed.
   * Published metadata from the above apps result in Handle.net persistent identifiers.
   * That the user who runs this program has permission to read from the ReDBox and Mint OAI-PMH RIF-CS URLs. This usually means that there are no firewall rules or Apache access controls preventing access to those URLs from the IP address upon which this program is running.
   * That the user who runs this program has permission to write files (static web pages) into the Apache (or other web server) web root directory.
+
+
+2.2 INSTRUCTIONS
 
 - Download from github
 - Checkout latest version/tag
@@ -40,5 +50,129 @@ INSTALLATION:
     - 2x :url_str_rifcs (if this script is being run on a different host than the ReDBox-Mint server)
 - If required update rules for your site (however the default rules will probably be suitable)
 
-EXAMPLES:
+
+3. EXAMPLES
+
+
+3.1 CRON JOB EXAMPLE
+
+After installing and testing this app (see the sample installation documentation later in this section)
+you can run a scheduled job (cron job) with a configuration similar to that below.
+
+  # Run job every hour from 8:20-18:20 Mon-Fri. Write stdout/stderr to a log file.
+  20 8-18 * * 1-5 $HOME/opt/rif2website/rif2website_wrap.sh >> $HOME/opt/rif2website/rif2website_wrap.log 2>&1
+
+
+3.2 SAMPLE INSTALLATION USING A TEMPLATE WITHOUT EXTERNAL CSS
+
+Scenario:
+ - A Handle.net server has been installed and is available for use by ReDBox and Mint.
+ - ReDBox and Mint have been installed and configured to create a handle during curation.
+ - The appropriate ReDBox and Mint data source json files have been configured to point
+   to a URL representing a static web page via the ReDBox-Mint OID. For ReDBox metadata, use:
+     "urlTemplate": "http://MY_VHOST/md/r/[[OID]].html",
+   For Mint metadata, use:
+     "urlTemplate": "http://MY_VHOST/md/m/[[OID]].html",
+   Where:
+   * MY_VHOST = andsdevpub.MY_DOMAIN
+   * "md/r" folder is for storage of ReDBox metadata web pages
+   * "md/m" folder is for storage of Mint metadata web pages
+   * "[[OID]]" is the ReDBox-Mint template-string and will be replaced with
+     the record's actual OID by ReDBox-Mint during curation
+ - Assumes you have at least one published record in ReDBox and at least one
+   published record in Mint, hence the records are visible locally (eg. via wget) at:
+     http://localhost:9000/redbox/published/feed/oai
+     http://localhost:9001/mint/published/feed/oai
+   or perhaps via a web browser at:
+     https://REDBOX_VHOST/redbox/published/feed/oai?verb=ListRecords&metadataPrefix=rif
+     https://MINT_VHOST/mint/published/feed/oai?verb=ListRecords&metadataPrefix=rif
+ - The filesystem path to each of the above web directories are:
+     /var/www/andsdevpub/md/r
+   and:
+     /var/www/andsdevpub/md/m
+   respectively.
+ - This application to be installed in $HOME/opt/rif2website of an unprivileged user.
+ - The above user has permission to write to /var/www/andsdevpub/md/r
+   and /var/www/andsdevpub/md/m.
+ - This application will be installed on the same host as the ReDBox-Mint server.
+ - The above user has permission to read from ReDBox-Mint OAI-PMH RIF-CS portals at:
+     http://localhost:9000/redbox/published/feed/oai
+     http://localhost:9001/mint/published/feed/oai
+ - Static pages will point to the harvested versions of the record in
+   the RDA (Research Data Australia) Demo environment.
+
+Instructions:
+
+mkdir ~/opt
+git clone https://github.com/grantj-re3/FlindersRedbox-rif2website.git ~/opt/rif2website
+cd ~/opt/rif2website
+
+# If you want a particular release:
+git tag # List tagged releases
+git checkout ... # Checkout the desired release
+
+# Read files INSTALL LICENSE README*
+
+# Symlink (or copy or rename) the etc_sample_nocss directory so that the contents appears to be in the etc directory.
+# In addition to configuration and rules files, this directory contains:
+# - a very simple html template
+# - an image/CSS tarball which is empty
+ln -s etc_sample_nocss etc
+
+# Update config for your site
+
+In rif2website.sh:
+ - confirm BIN_DIR has the value: $HOME/opt/rif2website
+
+In script rif2website_wrap.sh:
+ - confirm BIN_DIR=$HOME/opt/rif2website
+ - confirm WEB_APP_LIST="mint redbox"
+ - confirm IMAGES_CSS_TARBALL=$HOME/opt/rif2website/etc/images_css.tar.gz
+ - confirm HOST=`hostname -s`
+ - confirm VHOST="${HOST}pub"
+ - confirm WWW_PARENT=/var/www/$VHOST/md
+
+Confirm html template etc/metadata_record.tpl.html exists.
+
+In etc/conf_main.rb:
+ - values for the following Config[] keys in etc/conf_main.rb:
+
+ - In the "Config" hash, confirm the following key-value assignments:
+     :html_template_filename => "#{ENV['HOME']}/opt/rif2website/etc/metadata_record.tpl.html",
+     :html_summary_template_filename => "#{ENV['HOME']}/opt/rif2website/etc/metadata_record.tpl.html",
+     :ands_rda_url_prefix => 'http://demo.ands.org.au/view/',
+
+ - In the "ConfigMint" hash, confirm the following key-value assignments:
+     :dest_root_dir => '/var/www/andsdevpub/md/m_temp',
+     :url_str_rifcs => 'http://localhost:9001/mint/published/feed/oai',
+
+ - In the "ConfigRedbox" hash, confirm the following key-value assignments:
+     :dest_root_dir => '/var/www/andsdevpub/md/r_temp',
+     :url_str_rifcs => 'http://localhost:9000/redbox/published/feed/oai',
+
+# Run the program
+  ./rif2website_wrap.sh
+
+Examine the results:
+ - Check for errors or issues displayed by the program output (stdout).
+ - Check for errors or issues in the log file RifToWebsite.log.
+ - If there are no errors or issues, check that static web page files
+   exist at:
+     /var/www/andsdevpub/md/r/index.html
+     /var/www/andsdevpub/md/r/123456789.html  # Assumes 123456789 is an OID of a published ReDBox record
+     /var/www/andsdevpub/md/m/index.html
+     /var/www/andsdevpub/md/m/987654321.html  # Assumes 987654321 is an OID of a published Mint record
+ - Check that the contents of the files seem reasonable. All
+   tags of the form <!-- [[TAG_...]] --> should have been replaced
+   with RIF-CS or other contents, so should not exist in the above
+   website files.
+ - If the files exist and have reasonable contents, check that they
+   are available to the public via a web broswer at URLs:
+     http://MY_VHOST/md/r/index.html
+     http://MY_VHOST/md/r/123456789.html  # Assumes 123456789 is an OID of a published ReDBox record
+     http://MY_VHOST/md/m/index.html
+     http://MY_VHOST/md/m/987654321.html  # Assumes 987654321 is an OID of a published Mint record
+ - Once all is configured and running as desired, set up a cron job
+   as given in the Examples section.
+ - Celebrate!
 

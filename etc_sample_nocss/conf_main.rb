@@ -22,12 +22,12 @@ Config = {
   # within the template.
   # It is expected that this template will contain styles plus header,
   # footer & navigation content suitable for your organisation.
-  :html_template_filename => "#{ENV['HOME']}/opt/rif2website/etc/minimal_metadata_record.tpl.html",
+  :html_template_filename => "#{ENV['HOME']}/opt/rif2website/etc/metadata_record.tpl.html",
 
   # As above but this template is used to generate a summary page
   # (ie. a page which lists all the records for ReDBox and/or Mint).
 
-  :html_summary_template_filename => "#{ENV['HOME']}/opt/rif2website/etc/minimal_metadata_record.tpl.html",
+  :html_summary_template_filename => "#{ENV['HOME']}/opt/rif2website/etc/metadata_record.tpl.html",
 
   # Destination filename suffix (including any dots before an extension name)
   # Eg. '.htm' or '.html'
