@@ -232,8 +232,6 @@ ln -s ../etc_sample_nocss/rules_01.rb .
 cd ..
 
 
-# Use
-
 3.3 CRON JOB EXAMPLE
 
 After installing and testing this app (see the sample installation documentation above)
