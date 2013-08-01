@@ -22,38 +22,56 @@ Windows operating system, it may be feasible under 2 scenarios.
 2. INSTALLATION
 
 
-2.1 ASSUMPTIONS
+2.1 WARNING
 
-  * That you are using a Linux, Unix or Unix-like environment similar to that
-    described under APPLICATION ENVIRONMENT.
-  * You have ReDBox or Mint or both web apps installed.
-  * Published metadata from the above apps result in Handle.net persistent identifiers.
-  * That the user who runs this program has permission to read from the ReDBox
-    and Mint OAI-PMH RIF-CS URLs. This usually means that there are no firewall
-    rules or Apache access controls preventing access to those URLs from the IP
-    address upon which this program is running.
-  * That the user who runs this program has permission to write files (static web
-    pages) into the Apache (or other web server) web root directory.
+The rif2website_wrap.sh script uses rsync with the --delete option to
+synchronise directories. This is a potentially hazardous command!
+The man page says:
+
+  This tells rsync to delete extraneous files from the receiving side
+  (ones that aren't on the sending side)...  This option can be dangerous
+  if used incorrectly!  It is a very good idea to first try a run using
+  the --dry-run option (-n) to see what files are going to be deleted.
+
+In the rif2website_wrap.sh script, the --dry-run option can be added
+to the RSYNC_OPTS variable.
 
 
-2.2 INSTRUCTIONS
+2.2 ASSUMPTIONS
 
-- Download from github
-- Checkout latest version/tag
-- Update config for your site
-  * BIN_DIR in the script rif2website.sh
-  * BIN_DIR, IMAGES_CSS_TARBALL, HOST, VHOST, WWW_PARENT
-    in the script rif2website_wrap.sh
-  * create an html template for:
-    - your individual metadata web page (use the demo template initially)
-    - your summary web page (use the demo template initially)
-  * values for the following Config[] keys in etc/conf_main.rb:
-    - :html_template_filename
-    - :html_summary_template_filename
-    - :ands_rda_url_prefix
-    - 2x :dest_root_dir
-    - 2x :url_str_rifcs (if this script is being run on a different host than the ReDBox-Mint server)
-- If required update rules for your site (however the default rules will probably be suitable)
+ - That you have a basic understanding of Linux/Unix, Ruby and bash, sh or
+   ksh shell scripts.
+ - That you are using a Linux, Unix or Unix-like environment similar to that
+   described under APPLICATION ENVIRONMENT.
+ - rsync (http://rsync.samba.org/) has been installed.
+ - You have ReDBox or Mint or both web apps installed.
+ - Published metadata from the above apps result in Handle.net persistent identifiers.
+ - That the user who runs this program has permission to read from the ReDBox
+   and Mint OAI-PMH RIF-CS URLs. This usually means that there are no firewall
+   rules or Apache access controls preventing access to those URLs from the IP
+   address upon which this program is running.
+ - That the user who runs this program has permission to write files (static web
+   pages) into the Apache (or other web server) web root directory.
+
+
+2.3 INSTRUCTIONS
+
+ - Download from github
+ - Checkout latest version/tag
+ - Update config for your site
+   * BIN_DIR in the script rif2website.sh
+   * BIN_DIR, IMAGES_CSS_TARBALL, HOST, VHOST, WWW_PARENT
+     in the script rif2website_wrap.sh
+   * create an html template for:
+     - your individual metadata web page (use the demo template initially)
+     - your summary web page (use the demo template initially)
+   * values for the following Config[] keys in etc/conf_main.rb:
+     - :html_template_filename
+     - :html_summary_template_filename
+     - :ands_rda_url_prefix
+     - 2x :dest_root_dir
+     - 2x :url_str_rifcs (if this script is being run on a different host than the ReDBox-Mint server)
+ - If required update rules for your site (however the default rules will probably be suitable)
 
 
 3. EXAMPLES
@@ -136,6 +154,7 @@ In script rif2website_wrap.sh:
  - confirm HOST=`hostname -s`
  - confirm VHOST="${HOST}pub"
  - confirm WWW_PARENT=/var/www/$VHOST/md
+ - consider adding the --dry-run option to RSYNC_OPTS (see warning above)
 
 Confirm html template etc/metadata_record.tpl.html exists.
 
@@ -152,6 +171,12 @@ In etc/conf_main.rb:
  - In the "ConfigRedbox" hash, confirm the following key-value assignments:
      :dest_root_dir => '/var/www/andsdevpub/md/r_temp',
      :url_str_rifcs => 'http://localhost:9000/redbox/published/feed/oai',
+
+It is important that the following 2 variables are identical:
+ - INTERMED_WEBSITE_DIR (derived from WWW_PARENT) in each iteration of
+   the loop in script rif2website_wrap.sh
+ - ConfigMint[:dest_root_dir ] for Mint; ConfigRedbox[:dest_root_dir]
+   for ReDBox in etc/conf_main.rb
 
 # Run the program
   ./rif2website_wrap.sh
@@ -187,9 +212,11 @@ The purpose of this sample is to:
  - use a more complicated html template (but with TAG substitution identical to the above)
  - pay more attention to creating pretty web pages
 
-Scenario: Identical to the above scenario.
+Scenario:
+Identical to the above scenario.
 
-Instructions: Identical to the above instructions with the following exception.
+Instructions:
+Identical to the above instructions with the following exceptions.
 
 # Symlink (or copy or rename) the etc_sample_css directory so that the contents
 # appears to be in the etc directory.
@@ -198,6 +225,14 @@ Instructions: Identical to the above instructions with the following exception.
 # - an image/CSS tarball (of which the contents was obtained from the same zip file)
 ln -s etc_sample_css etc
 
+# Symlink (or copy or rename) the configuration and rules files.
+cd etc_sample_css
+ln -s ../etc_sample_nocss/conf_main.rb .
+ln -s ../etc_sample_nocss/rules_01.rb .
+cd ..
+
+
+# Use
 
 3.3 CRON JOB EXAMPLE
 
@@ -239,6 +274,11 @@ then follow the guidelines below.
    Class:  RifToWebsite
    Method: self.to_s_html()
    Hash:   tpl_tag_repl_strs
+
+Date-time formatting is performed using the strftime() method (with Ruby
+documentation at http://ruby-doc.org/core-1.8.7/Time.html#method-i-strftime).
+The Ruby timezone is taken from either the operating system or the shell
+TZ environment variable.
 
 Changing substitution text for other tags is beyond the scope of
 this document.

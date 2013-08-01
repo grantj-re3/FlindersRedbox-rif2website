@@ -92,6 +92,13 @@ Config = {
 ConfigMint = {
   # Destination root directory. Web pages (records) which are created by this
   # script will be written here.
+  #
+  # This value must be identical to INTERMED_WEBSITE_DIR (derived from
+  # WWW_PARENT) in script rif2website_wrap.sh. For the 'mint' iteration
+  # of the loop, the value must be identical to ConfigMint[:dest_root_dir]
+  # & the right-most directory must be 'm_temp'. For the 'redbox'
+  # iteration of the loop, the value must be identical to
+  # ConfigRedbox[:dest_root_dir] & the right-most directory must be 'r_temp'.
   :dest_root_dir => '/var/www/andsdevpub/md/m_temp',
 
   # The base-URL string (ie. without the query string) for the ReDBox or
@@ -119,6 +126,7 @@ ConfigMint = {
 # Config[] hash (overwriting entries with duplicate keys with those from
 # ConfigRedbox[]).
 
+# The description of the key-values below are identical to those for ConfigMint above.
 ConfigRedbox = {
   :dest_root_dir => '/var/www/andsdevpub/md/r_temp',
   :url_str_rifcs => 'http://localhost:9000/redbox/published/feed/oai',

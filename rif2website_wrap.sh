@@ -115,9 +115,11 @@ echo_timestamp "Starting $APP"
 validate_ruby_version
 
 for web_app in $WEB_APP_LIST; do
-  child_dir=`echo $web_app |cut -c1`
+  child_dir=`echo $web_app |cut -c1`			# child_dir = 'r' for redbox; 'm' for mint
   PUBLIC_WEBSITE_DIR=$WWW_PARENT/$child_dir		# Target website dir. Eg. /var/www/YOUR_VHOST/metadata/m
-  INTERMED_WEBSITE_DIR=${PUBLIC_WEBSITE_DIR}_temp	# Must be same as Config[:dest_root_dir] in rif2website.rb. Eg. /var/www/YOUR_VHOST/metadata/m_temp
+  # INTERMED_WEBSITE_DIR must be same as ConfigRedbox[:dest_root_dir] & ConfigMint[:dest_root_dir]
+  # in etc/conf_main.rb Eg. /var/www/YOUR_VHOST/metadata/m_temp
+  INTERMED_WEBSITE_DIR=${PUBLIC_WEBSITE_DIR}_temp
   BACKUP_WEBSITE_DIR=${PUBLIC_WEBSITE_DIR}_back		# Backup of target website dir. Eg. /var/www/YOUR_VHOST/metadata/m_back
 
   for dir in $PUBLIC_WEBSITE_DIR $INTERMED_WEBSITE_DIR $BACKUP_WEBSITE_DIR; do

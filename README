@@ -57,3 +57,9 @@ TODO:
   See http://stackoverflow.com/questions/13003760/in-ruby-how-can-i-extract-a-tar-archive-stream-directly-to-the-filesystem
 - Instruct browser not to cache page for more than a few hours?
 
+ACKNOWLEDGEMENT:
+
+The development of this software was a component of a larger Flinders University
+(http://www.flinders.edu.au/) project funded by the Australian National Data
+Service (ANDS). See http://ands.org.au
+
