@@ -64,7 +64,6 @@ class String
   #   to lower case. The first character of the string has an index of 0.
   # * Argument _length_: The number of characters to be converted to lower case.
   def downcase_chars!(index=0, length=1)
-    #puts "index=#{index}; length=#{length}; self[index, length]='#{self[index, length]}'"
     self[index, length] = self[index, length].downcase
     self
   end
@@ -89,7 +88,6 @@ class String
   #   to upper case. The first character of the string has an index of 0.
   # * Argument _length_: The number of characters to be converted to upper case.
   def upcase_chars!(index=0, length=1)
-    #puts "index=#{index}; length=#{length}; self[index, length]='#{self[index, length]}'"
     self[index, length] = self[index, length].upcase
     self
   end

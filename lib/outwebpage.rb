@@ -120,7 +120,6 @@ class OutWebPage
 
     @out_file_path = output_file_path
     return unless @out_file_path
-    #puts "Output file path = #{@out_file_path}"
 
     # Process elements of this record to create lines (for writing to a web page)
     @lines = {}
@@ -184,7 +183,6 @@ class OutWebPage
     return @@record_types_with_rules if @@record_types_with_rules  # Return cached result
 
     @@record_types_with_rules = []
-    #regex_str1 = "(#{CAP_RIF_RECORD_TYPES.join('|')})"
 
     Module.constants.each{|cname|
       if VALID_RULENAMES.include?(cname)  # Security check for eval()
@@ -198,9 +196,6 @@ class OutWebPage
           $LOG.debug "RIF-CS processing rules assumed in array #{cname}"
           CAP_RIF_RECORD_TYPES.each{|type1|
             if cname.match(/^#{type1}/)
-
-#puts "\n### ConstantName: #{cname}"
-#puts "### #{(eval cname).inspect}"
               type2 = cname.sub(/^#{type1}(.+)Rules$/, '\1')
               @@record_types_with_rules << "#{type1.downcase_chars},#{type2.downcase_chars}"
             end
@@ -252,7 +247,6 @@ class OutWebPage
   # Eg. /vrtualhost/web/path/index.html. The summary-file is a web page
   # which contains links to other web pages created by this program.
   def self.output_summary_file_path
-    ###summary_fname_without_suffix = 'index'
     "#{Config[:dest_root_dir]}/#{Config[:dest_summary_filename_prefix]}#{Config[:dest_filename_suffix]}" 
   end
 
@@ -407,8 +401,6 @@ class OutWebPage
   def show_tanames_tavalues(order, action, label, xpath)
     str = ''
     @doc.elements.each(xpath.to_s_xpath){|e|
-      #attr_names = []
-      #e.attributes.each{|aname,avalue| attr_names << aname }
       attr_names = e.attributes.inject([]){|a,(aname,avalue)| a << aname; a}
       str += HtmlHelper.tr( [label, attr_names.join(','), e.attributes.to_a.join(',')] )
     }

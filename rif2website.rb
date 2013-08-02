@@ -187,16 +187,12 @@ class RifToWebsite
     rec_regex_str = "^(#{RIF_RECORD_TYPES.join('|')})$"
     mgr = InRifPageManager.new
     while mgr.next_page
-      #puts "$$$ Got RIF-CS URL #{mgr.url_str}"
-
       # XPath points to the node where xmlns ("rif") is defined.
       xpath_ns = "ListRecords/record/metadata/#{Config[:ns_prefix_rif]}registryObjects"
       String.xpath_prefix = Config[:ns_prefix_rif]
 
       # For non-retired (ie. OAI-PMH non-deleted) records
       mgr.doc.root.elements.each(xpath_ns){|e|	# Each rifcs record
-        #puts "\n\n" + '#' * 78
-        #puts e
         doc_record = REXML::Document.new(e.to_s)
         doc_record.elements.each("registryObjects/registryObject/*".to_s_xpath){|e2|
           if e2.name.match(rec_regex_str)
@@ -217,8 +213,6 @@ class RifToWebsite
 
       mgr.doc.root.elements.each("ListRecords/record/header"){|e|	# Each header element
         next unless e.attributes['status'] == 'deleted'
-        #puts '=' * 50
-        #puts "header='#{e}'"
 
         doc_record = REXML::Document.new(e.to_s)
         out = OutWebPage.new(OutWebPage::REC_TYPE_DELETED, doc_record)
@@ -230,7 +224,6 @@ class RifToWebsite
     File.write_string(OutWebPage.output_summary_file_path, to_s_html(summary_fields))
   end
 
-##############################################################################
   # Return a summary html string based on information in the summary_fields
   # array.
   # * Argument _summary_fields_: An array of hashes. Each hash gives

@@ -1,5 +1,10 @@
 # Main config for rif2website.rb
 # All assignments within this file are ruby script commands
+#--
+# Copyright (c) 2013, Flinders University, South Australia. All rights reserved.
+# Contributors: eResearch@Flinders, Library, Information Services, Flinders University.
+# See the accompanying LICENSE file (or http://opensource.org/licenses/BSD-3-Clause).
+#++ 
 ##############################################################################
 
 Config = {

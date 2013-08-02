@@ -74,7 +74,7 @@ Features
 Todo
 ----
 - Consider untarring images/css in ruby via config file (perhaps using minitar gem).
-- Instruct browser not to cache page?
+- Consider instructing the web browser not to cache the page.
 
 Acknowledgement
 ---------------

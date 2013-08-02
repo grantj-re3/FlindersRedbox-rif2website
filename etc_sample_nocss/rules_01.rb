@@ -1,5 +1,10 @@
 # Rules for rif2website.rb
 # All assignments within this file are ruby script commands
+#--
+# Copyright (c) 2013, Flinders University, South Australia. All rights reserved.
+# Contributors: eResearch@Flinders, Library, Information Services, Flinders University.
+# See the accompanying LICENSE file (or http://opensource.org/licenses/BSD-3-Clause).
+#++ 
 #
 # It is important that the ruby constant identifier name for each rule
 # matches the RIF-CS record-type and subtype as follows. For RIFCS 
@@ -48,7 +53,6 @@ AnyDeletedRules = [
   [ 2470, :showinfo_repo_name,		"Repository name",			"", ],
   [ 2480, :showinfo_repo_oid,		"Repository object ID",			"", ],
 
-  #[ 2490, :showinfo_url_ands_reg,	"Record <em>may</em> exist at the ANDS Online Services Collections Registry",	"header/identifier", ],
   [ 2490, :showinfo_url_ands_rda,	"Record <em>may</em> exist at Research Data Australia",				"header/identifier", ],
   [ 2495, :showinfo_url_ands_reg,	"Record <em>may</em> exist at the ANDS Online Services Collections Registry",	"header/identifier", ],
 ]

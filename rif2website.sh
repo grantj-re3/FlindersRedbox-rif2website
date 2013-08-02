@@ -1,5 +1,10 @@
 #!/bin/bash
 # Usage: rif2website.sh --mint | --redbox
+#
+# Copyright (c) 2013, Flinders University, South Australia. All rights reserved.
+# Contributors: eResearch@Flinders, Library, Information Services, Flinders University.
+# See the accompanying LICENSE file (or http://opensource.org/licenses/BSD-3-Clause).
+# 
 ##############################################################################
 BIN_DIR=$HOME/opt/rif2website
 EXE_FNAME=rif2website.rb

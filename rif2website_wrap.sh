@@ -1,6 +1,12 @@
 #!/bin/sh
 # Usage: rif2website_wrap.sh
 #
+# Copyright (c) 2013, Flinders University, South Australia. All rights reserved.
+# Contributors: eResearch@Flinders, Library, Information Services, Flinders University.
+# See the accompanying LICENSE file (or http://opensource.org/licenses/BSD-3-Clause).
+# 
+##############################################################################
+#
 # It is recommended that this script be run by an unprivileged (non-root)
 # user which has the ability to write files/dirs within the apache
 # web-server's document-root.
