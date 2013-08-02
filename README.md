@@ -13,17 +13,16 @@ specified in a file.
 
 Notes
 -----
-- Has been tested & designed for use on ReDBox & Mint dev-handle build.
-  (It may work for other ReDBox-Mint/Fascinator variants.)
+- Has been tested and designed for use on ReDBox and Mint dev-handle build.
 - In order for handles to point to these pages, each data source template
-  (eg. Mint home/harvest/Services.json) should have the urlTemplate like:
-    "urlTemplate": "http://MY_STATIC_PAGES_VHOST/MY_PATH/[[OID]].html",
+  (eg. Mint home/harvest/Parties_People.json) should have it's urlTemplate like:
+  > "urlTemplate": "http://MY_STATIC_PAGES_VHOST/MY_PATH/[[OID]].html",
 
   At the time of writing, all Mint urlTemplates are:
-    "urlTemplate": "http://MY_STATIC_PAGES_VHOST/md/m/[[OID]].html",
+  > "urlTemplate": "http://MY_STATIC_PAGES_VHOST/md/m/[[OID]].html",
 
   and ReDBox urlTemplate (in home/harvest/workflows/dataset.json) is:
-    "urlTemplate": "http://MY_STATIC_PAGES_VHOST/md/r/[[OID]].html",
+  > "urlTemplate": "http://MY_STATIC_PAGES_VHOST/md/r/[[OID]].html",
 - Because the source information is the ReDBox-Mint RIF-CS portals, hence
   available on a network, this script (and so the destination website)
   can be on a host other than ReDBox or Mint servers.
@@ -43,10 +42,10 @@ Features
 - If there is more than one OAI-PMH page of records, iterate through all pages by using the resumption token
 - Use the following config files (with hash elements which can be overwritten):
   * main (containing RIFCS URL, target root dir, target html-template, user-agent)
-  * multiple rule-files according to user's preference Eg. perhaps 1 per record type (eg. collection, party) & subtype (eg. dataset, person)
+  * multiple rule-files according to user's preference Eg. perhaps 1 per record type (eg. collection, party) and subtype (eg. dataset, person)
 - log file (eg. errors, warnings)
 - HtmlHelper class
-- Allow one invocation for Mint & another for Redbox.
+- Allow one invocation for Mint and another for Redbox.
 - Using a replacement token for xpath PRIMARY RECORD TYPE so the user
   can reference other rulesets. Eg ActivityProjectRules = PartyPersonRules
 - Allow program to determine which RIF-CS records will be processed based
@@ -62,20 +61,20 @@ Features
 - Split dest dir by redbox/mint repo; may be necessary to avoid an OID namespace clash!
 - Consider creating a summary page (eg. index.html) which points to all
   static pages created by this script.
-- Use common html-template for both summary page & individual pages.
+- Use common html-template for both summary page and individual pages.
 - Allow selected output table rows to be highlighted (eg. with bold or italic text).
 - Ruby source code produces rdoc documentation.
+- Rules have been written for record types:
+  * party-person
+  * activity-project
+  * collection-* (but not complete)
+
+  No rules have been written for service-* 
 
 Todo
 ----
-- Write rules for record types:
-  * party-person [DONE]
-  * activity-project [DONE]
-  * collection-*
-  * service-* [NA]
 - Consider untarring images/css in ruby via config file (perhaps using minitar gem).
-  See http://stackoverflow.com/questions/13003760/in-ruby-how-can-i-extract-a-tar-archive-stream-directly-to-the-filesystem
-- Instruct browser not to cache page for more than a few hours?
+- Instruct browser not to cache page?
 
 Acknowledgement
 ---------------
