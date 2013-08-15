@@ -427,9 +427,13 @@ class OutWebPage
       fields = {}
       e.each_element{|e2|
         fields[:key] = e2.text if e2.name == 'key'
-        fields[:relation_type] = e2.attributes['type'] if e2.name == 'relation'
+        if e2.name == 'relation'
+          fields[:relation_type] = e2.attributes['type']
+          e2.each_element{|e3| fields[:description] = e3.text if e3.name == 'description' }
+        end
       }
-      str += HtmlHelper.tr( [label, fields[:relation_type], fields[:key]] )
+      aux = fields[:description] ? "#{fields[:relation_type]} (#{fields[:description]})" : fields[:relation_type]
+      str += HtmlHelper.tr( [label, aux, fields[:key]] )
     }
     str
   end

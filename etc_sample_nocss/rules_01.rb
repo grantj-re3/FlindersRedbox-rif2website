@@ -129,6 +129,7 @@ CollectionDatasetRules = [
   [ 2280, :show_tavalues_tevalues,	"Rights Statement",	"registryObjects/registryObject/collection/rights/rightsStatement", ],
   [ 2290, :show_tavalues_tevalues,	"Access Rights",	"registryObjects/registryObject/collection/rights/accessRights", ],
   [ 2300, :showelement_related_info,	"Related Information",	"registryObjects/registryObject/collection/relatedInfo", ],
+  [ 2310, :show_tavalues_tevalues,	"Citation Info (full)",	"registryObjects/registryObject/collection/citationInfo/fullCitation", ],
 
   [ 2360, :show_tanames_tavalues,	"Registry Object",	"registryObjects/registryObject", ],
   ##[ 2380, :show_tavalues_tevalues,	"Originating Source",	"registryObjects/registryObject/originatingSource", ],
