@@ -302,7 +302,7 @@ To create a page which has branding suitable for your organisation, you need to:
    However, it is recommended to keep image/CSS files under the control of
    the same person/group who supports this program and template.
 
-3) Five html-commented-tags placed appropriately within the template. (See
+3) Appropriately place five html-commented-tags within the template. (See
    the sample templates, etc/metadata_record.tpl.html).
 
 Notes:
