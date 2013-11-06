@@ -139,6 +139,9 @@ for web_app in $WEB_APP_LIST; do
   cmd="tar zxpf \"$IMAGES_CSS_TARBALL\" -C \"$INTERMED_WEBSITE_DIR\""
   do_command "$cmd" $VERBOSE "Extract CSS, images, etc to intermediate directory"
 
+  cmd="echo \"Last updated:  `date '+%a %F %T (%z)'`\" > \"$INTERMED_WEBSITE_DIR/last_updated\""
+  do_command "$cmd" $VERBOSE "Write timestamp to a file in the intermediate directory"
+
   cmd="[ -d "$PUBLIC_WEBSITE_DIR" ] && rsync $RSYNC_OPTS \"$PUBLIC_WEBSITE_DIR/\" \"$BACKUP_WEBSITE_DIR\""
   do_command "$cmd" $VERBOSE "Sync the backup dir (from the production website). BEWARE: Potentially hazardous command!"
 
