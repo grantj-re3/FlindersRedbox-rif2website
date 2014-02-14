@@ -200,8 +200,10 @@ class RifToWebsite
             #puts "$$$ #{e2.name}-#{e2.attributes['type']} = #{e2.inspect}\n\n"
             #3.times{puts '=' *78}
             out = OutWebPage.new(rec_type, doc_record)
-            out.write_to_file
-            summary_fields << out.get_summary
+            if out.valid?
+              out.write_to_file
+              summary_fields << out.get_summary
+            end
           end
         }
       }
@@ -216,8 +218,10 @@ class RifToWebsite
 
         doc_record = REXML::Document.new(e.to_s)
         out = OutWebPage.new(OutWebPage::REC_TYPE_DELETED, doc_record)
-        out.write_to_file
-        summary_fields << out.get_summary
+        if out.valid?
+          out.write_to_file
+          summary_fields << out.get_summary
+        end
       }
     end
     $LOG.info "Writing summary html text to file #{OutWebPage.output_summary_file_path}"

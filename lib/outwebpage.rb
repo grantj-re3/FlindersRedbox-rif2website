@@ -126,6 +126,11 @@ class OutWebPage
     process_record
   end
 
+  # Is this object valid?
+  def valid?
+    @rec_type != nil
+  end
+
   # Return @rec_type in different string formats. The first argument
   # specifies the string separator between items. The optional second
   # argument specifies whether to capitalize the first letter of each item
@@ -355,6 +360,14 @@ class OutWebPage
   # * Key
   # * Name
   def get_summary
+    unless valid?
+      return {
+        :Type    => '',
+        :Subtype => '',
+        :Key     => '',
+        :Name    => '',
+      }
+    end
     fields = {}
     fields[:Type], fields[:Subtype] = rec_type_str(',', true).split(',')
     type = fields[:Type].downcase
