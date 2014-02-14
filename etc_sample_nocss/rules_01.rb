@@ -100,9 +100,28 @@ ActivityProjectRules = GenericRules_ActivityPartyService
 ##############################################################################
 # Services
 ##############################################################################
-# INCOMPLETE!
-# Processing rules for RIFCS record type <service type="create">
-ServiceCreateRules = GenericRules_ActivityPartyService
+# Processing rules for RIFCS record type <service type="SERVICE_TYPE">
+# where SERVICE_TYPE is one of the following:
+#   Annotate Assemble Create Generate Report Transform 
+#   Harvest-oaipmh Search-http Search-opensearch Search-sru Search-srw
+#   Search-z3950 Syndicate-atom Syndicate-rss
+# Eg. Rules for <service type="create"> would be ServiceCreateRules
+ServiceAnnotateRules  = GenericRules_ActivityPartyService
+ServiceAssembleRules  = GenericRules_ActivityPartyService
+ServiceCreateRules    = GenericRules_ActivityPartyService
+ServiceGenerateRules  = GenericRules_ActivityPartyService
+ServiceReportRules    = GenericRules_ActivityPartyService
+ServiceTransformRules = GenericRules_ActivityPartyService
+
+ServiceHarvest_oaipmhRules    = GenericRules_ActivityPartyService
+ServiceSearch_httpRules       = GenericRules_ActivityPartyService
+ServiceSearch_opensearchRules = GenericRules_ActivityPartyService
+ServiceSearch_sruRules        = GenericRules_ActivityPartyService
+ServiceSearch_srwRules        = GenericRules_ActivityPartyService
+
+ServiceSearch_z3950Rules   = GenericRules_ActivityPartyService
+ServiceSyndicate_atomRules = GenericRules_ActivityPartyService
+ServiceSyndicate_rssRules  = GenericRules_ActivityPartyService
 
 ##############################################################################
 # Collections

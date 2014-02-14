@@ -79,6 +79,8 @@ class OutWebPage
   LABELS_TO_HIGHLIGHT = [ 'Name (part)', ]
   HTML_HIGHLIGHTING_TAGS = [:strong, :em]
 
+  VALID_RECORD_TYPE_CONVERSIONS = [:none, :hyphen2underscore, :underscore2hyphen]
+
 ##############################################################################
   @@object_count = 0
   @@record_types_with_rules = nil  # Do not access directly, except within record_types_with_rulesets()
@@ -105,6 +107,7 @@ class OutWebPage
       @rec_type = nil
       return
     end
+
     @@object_count += 1
     if self.class.record_types_with_rulesets.include?(rec_type)
       $LOG.info "[#{@@object_count}] RIF-CS record '#{rec_type}' -- processing"
@@ -137,9 +140,20 @@ class OutWebPage
   # (default is to leave as lower case). Eg. For @rec_type = "party,person"
   # * rec_type_str('-') returns "party-person"
   # * rec_type_str('', true) returns "PartyPerson"
-  def rec_type_str(separator, is_cap=nil)
+  def rec_type_str(separator, is_cap=nil, convert=:none)
+    unless VALID_RECORD_TYPE_CONVERSIONS.include?(convert)
+      STDERR.puts "ERROR: Invalid conversion type '#{convert}' in method #{__method__}"
+      exit 2
+    end
     rec_types = @rec_type.split(',')
     rec_types.each{|w| w.upcase_chars!} if is_cap
+
+    case convert
+    when :hyphen2underscore
+      rec_types.each{|w| w.gsub!('-', '_')}
+    when :underscore2hyphen
+      rec_types.each{|w| w.gsub!('_', '-')}
+    end
     rec_types.join(separator)
   end
 
@@ -202,7 +216,7 @@ class OutWebPage
           CAP_RIF_RECORD_TYPES.each{|type1|
             if cname.match(/^#{type1}/)
               type2 = cname.sub(/^#{type1}(.+)Rules$/, '\1')
-              @@record_types_with_rules << "#{type1.downcase_chars},#{type2.downcase_chars}"
+              @@record_types_with_rules << "#{type1.downcase_chars},#{type2.downcase_chars.gsub('_', '-')}"
             end
           }
         end
@@ -224,7 +238,7 @@ class OutWebPage
 
   # Iterate through the processing rules; for each rule, invoke the method specified by 'action'
   def process_record
-    rules_str = "#{rec_type_str('', true)}Rules"
+    rules_str = "#{rec_type_str('', true, :hyphen2underscore)}Rules"
     # Security check for eval() on @rec_type already done for this object
     rules = eval(rules_str)  # Eg. PartyPersonConfig or CollectionDatasetConfig
     rules.each{|order, action, label, xpath|
