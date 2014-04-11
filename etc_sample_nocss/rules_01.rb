@@ -1,7 +1,7 @@
 # Rules for rif2website.rb
 # All assignments within this file are ruby script commands
 #--
-# Copyright (c) 2013, Flinders University, South Australia. All rights reserved.
+# Copyright (c) 2013-2014, Flinders University, South Australia. All rights reserved.
 # Contributors: eResearch@Flinders, Library, Information Services, Flinders University.
 # See the accompanying LICENSE file (or http://opensource.org/licenses/BSD-3-Clause).
 #++ 
@@ -54,7 +54,7 @@ AnyDeletedRules = [
   [ 2480, :showinfo_repo_oid,		"Repository object ID",			"", ],
 
   [ 2490, :showinfo_url_ands_rda,	"Record <em>may</em> exist at Research Data Australia",				"header/identifier", ],
-  [ 2495, :showinfo_url_ands_reg,	"Record <em>may</em> exist at the ANDS Online Services Collections Registry",	"header/identifier", ],
+  #[ 2495, :showinfo_url_ands_reg,	"Record <em>may</em> exist at the ANDS Online Services Collections Registry",	"header/identifier", ],
 ]
 
 ##############################################################################
@@ -62,23 +62,24 @@ AnyDeletedRules = [
 ##############################################################################
 GenericRules_ActivityPartyService = [
 # [ Sort, ActionMethod,			Label,			XPath, ],
-  [ 2040, :show_tavalues_tevalues,	"Name (part)",		"registryObjects/registryObject/[[PRIMARY_RECORD_TYPE_TAG]]/name/namePart", ],
-  [ 2060, :show_tavalues_tevalues,	"Key",			"registryObjects/registryObject/key", ],
-  [ 2100, :show_tavalues_tevalues,	"Identifier",		"registryObjects/registryObject/[[PRIMARY_RECORD_TYPE_TAG]]/identifier", ],
-  [ 2200, :show_tavalues_cevalues,	"Address (electronic)",	"registryObjects/registryObject/[[PRIMARY_RECORD_TYPE_TAG]]/location/address/electronic", ],
-  [ 2202, :show_tavalues_tevalues,	"Address (physical)",	"registryObjects/registryObject/[[PRIMARY_RECORD_TYPE_TAG]]/location/address/physical/addressPart", ],
+  [ 2100, :show_tavalues_tevalues,	"Name",			"registryObjects/registryObject/[[PRIMARY_RECORD_TYPE_TAG]]/name/namePart", ],
+  [ 2140, :showinfo_url_ands_rda,	"Record <em>may</em> exist at Research Data Australia",				"registryObjects/registryObject/key", ],
+  [ 2160, :show_tavalues_tevalues,	"Identifier",		"registryObjects/registryObject/[[PRIMARY_RECORD_TYPE_TAG]]/identifier", ],
 
-  [ 2220, :show_tavalues_tevalues,	"Subject",		"registryObjects/registryObject/[[PRIMARY_RECORD_TYPE_TAG]]/subject", ],
-  [ 2240, :show_tavalues_tevalues,	"Description",		"registryObjects/registryObject/[[PRIMARY_RECORD_TYPE_TAG]]/description", ],
-  [ 2260, :showelement_related_object,	"Related Object",	"registryObjects/registryObject/[[PRIMARY_RECORD_TYPE_TAG]]/relatedObject", ],
+  [ 2200, :show_tavalues_cevalues,	"Electronic Address",	"registryObjects/registryObject/[[PRIMARY_RECORD_TYPE_TAG]]/location/address/electronic", ],
+  [ 2220, :show_tavalues_tevalues,	"Physical Address",	"registryObjects/registryObject/[[PRIMARY_RECORD_TYPE_TAG]]/location/address/physical/addressPart", ],
 
-  [ 2360, :show_tanames_tavalues,	"Registry Object",	"registryObjects/registryObject", ],
-  ##[ 2380, :show_tavalues_tevalues,	"Originating Source",	"registryObjects/registryObject/originatingSource", ],
+  [ 2300, :show_tavalues_tevalues,	"Description",		"registryObjects/registryObject/[[PRIMARY_RECORD_TYPE_TAG]]/description", ],
 
-  [ 2470, :showinfo_repo_name,		"Repository name",	"", ],
-  [ 2480, :showinfo_repo_oid,		"Repository object ID",	"", ],
+  [ 2600, :showelement_related_object,	"Related Object",	"registryObjects/registryObject/[[PRIMARY_RECORD_TYPE_TAG]]/relatedObject", ],
+  [ 2620, :show_tavalues_tevalues,	"Subject",		"registryObjects/registryObject/[[PRIMARY_RECORD_TYPE_TAG]]/subject", ],
 
-  [ 2490, :showinfo_url_ands_rda,	"Record <em>may</em> exist at Research Data Australia",				"registryObjects/registryObject/key", ],
+  [ 2700, :show_tanames_tavalues,	"Registry Object",	"registryObjects/registryObject", ],
+  ##[ 2720, :show_tavalues_tevalues,	"Originating Source",	"registryObjects/registryObject/originatingSource", ],
+  [ 2740, :showinfo_repo_name,		"Repository name",	"", ],
+  [ 2760, :showinfo_repo_oid,		"Repository object ID",	"", ],
+
+  [ 2800, :show_tavalues_tevalues,	"Key",			"registryObjects/registryObject/key", ],
 
 ]
 
@@ -131,34 +132,33 @@ ServiceSyndicate_rssRules  = GenericRules_ActivityPartyService
 
 CollectionDatasetRules = [
 # [ Sort, ActionMethod,			Label,			XPath, ],
-  [ 2040, :show_tavalues_tevalues,	"Name (part)",		"registryObjects/registryObject/collection/name/namePart", ],
-  [ 2060, :show_tavalues_tevalues,	"Key",			"registryObjects/registryObject/key", ],
+  [ 2100, :show_tavalues_tevalues,	"Name",			"registryObjects/registryObject/collection/name/namePart", ],
+  #[ 2140, :showinfo_url_ands_reg,	"Record <em>may</em> exist at the ANDS Online Services Collections Registry",	"registryObjects/registryObject/key", ],
+  [ 2140, :showinfo_url_ands_rda,	"Record <em>may</em> exist at Research Data Australia",				"registryObjects/registryObject/key", ],
+  [ 2160, :show_tavalues_tevalues,	"Identifier",		"registryObjects/registryObject/collection/identifier", ],
 
-  [ 2100, :show_tavalues_tevalues,	"Identifier",		"registryObjects/registryObject/collection/identifier", ],
-  [ 2200, :show_tavalues_cevalues,	"Address (electronic)",	"registryObjects/registryObject/collection/location/address/electronic", ],
-  [ 2202, :show_tavalues_tevalues,	"Address (physical)",	"registryObjects/registryObject/collection/location/address/physical/addressPart", ],
+  [ 2200, :show_tavalues_cevalues,	"Electronic Address",	"registryObjects/registryObject/collection/location/address/electronic", ],
+  [ 2220, :show_tavalues_tevalues,	"Physical Address",	"registryObjects/registryObject/collection/location/address/physical/addressPart", ],
 
-  [ 2204, :show_tavalues_tevalues,	"Coverage (spatial)",	"registryObjects/registryObject/collection/coverage/spatial", ],
-  [ 2206, :show_tavalues_tevalues,	"Coverage (temporal)",	"registryObjects/registryObject/collection/coverage/temporal/date", ],
+  [ 2300, :show_tavalues_tevalues,	"Description",		"registryObjects/registryObject/collection/description", ],
+  [ 2320, :show_tavalues_tevalues,	"Rights Statement",	"registryObjects/registryObject/collection/rights/rightsStatement", ],
+  [ 2340, :show_tavalues_tevalues,	"Access Rights",	"registryObjects/registryObject/collection/rights/accessRights", ],
 
-  [ 2220, :show_tavalues_tevalues,	"Subject",		"registryObjects/registryObject/collection/subject", ],
-  [ 2240, :show_tavalues_tevalues,	"Description",		"registryObjects/registryObject/collection/description", ],
-  [ 2260, :showelement_related_object,	"Related Object",	"registryObjects/registryObject/collection/relatedObject", ],
+  [ 2400, :show_tavalues_tevalues,	"Citation Info",	"registryObjects/registryObject/collection/citationInfo/fullCitation", ],
 
-  [ 2280, :show_tavalues_tevalues,	"Rights Statement",	"registryObjects/registryObject/collection/rights/rightsStatement", ],
-  [ 2290, :show_tavalues_tevalues,	"Access Rights",	"registryObjects/registryObject/collection/rights/accessRights", ],
-  [ 2300, :showelement_related_info,	"Related Information",	"registryObjects/registryObject/collection/relatedInfo", ],
-  [ 2310, :show_tavalues_tevalues,	"Citation Info (full)",	"registryObjects/registryObject/collection/citationInfo/fullCitation", ],
+  [ 2500, :show_tavalues_tevalues,	"Temporal Coverage",	"registryObjects/registryObject/collection/coverage/temporal/date", ],
+  [ 2520, :show_tavalues_tevalues,	"Spatial Coverage",	"registryObjects/registryObject/collection/coverage/spatial", ],
 
-  [ 2360, :show_tanames_tavalues,	"Registry Object",	"registryObjects/registryObject", ],
-  ##[ 2380, :show_tavalues_tevalues,	"Originating Source",	"registryObjects/registryObject/originatingSource", ],
+  [ 2600, :showelement_related_object,	"Related Object",	"registryObjects/registryObject/collection/relatedObject", ],
+  [ 2620, :show_tavalues_tevalues,	"Subject",		"registryObjects/registryObject/collection/subject", ],
+  [ 2640, :showelement_related_info,	"Related Information",	"registryObjects/registryObject/collection/relatedInfo", ],
 
-  [ 2470, :showinfo_repo_name,		"Repository name",	"", ],
-  [ 2480, :showinfo_repo_oid,		"Repository object ID",	"", ],
+  [ 2700, :show_tanames_tavalues,	"Registry Object",	"registryObjects/registryObject", ],
+  ##[ 2720, :show_tavalues_tevalues,	"Originating Source",	"registryObjects/registryObject/originatingSource", ],
+  [ 2740, :showinfo_repo_name,		"Repository name",	"", ],
+  [ 2760, :showinfo_repo_oid,		"Repository object ID",	"", ],
 
-  #[ 2490, :showinfo_url_ands_reg,	"Record <em>may</em> exist at the ANDS Online Services Collections Registry",	"registryObjects/registryObject/key", ],
-  [ 2490, :showinfo_url_ands_rda,	"Record <em>may</em> exist at Research Data Australia",				"registryObjects/registryObject/key", ],
-
+  [ 2800, :show_tavalues_tevalues,	"Key",			"registryObjects/registryObject/key", ],
 ]
 
 # Processing rules for RIFCS record type <collection type="collection">

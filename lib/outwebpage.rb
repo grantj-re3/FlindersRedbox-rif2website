@@ -1,5 +1,5 @@
 #--
-# Copyright (c) 2013, Flinders University, South Australia. All rights reserved.
+# Copyright (c) 2013-2014, Flinders University, South Australia. All rights reserved.
 # Contributors: eResearch@Flinders, Library, Information Services, Flinders University.
 # See the accompanying LICENSE file (or http://opensource.org/licenses/BSD-3-Clause).
 #++ 
@@ -76,7 +76,7 @@ class OutWebPage
   # the config file, all text in the corresponding output html-table-row
   # shall be highlighted. Html highlighting shall be performed with the
   # html tags (written as ruby symbols) listed in HTML_HIGHLIGHTING_TAGS.
-  LABELS_TO_HIGHLIGHT = [ 'Name (part)', ]
+  LABELS_TO_HIGHLIGHT = [ 'Name', ]
   HTML_HIGHLIGHTING_TAGS = [:strong, :em]
 
   VALID_RECORD_TYPE_CONVERSIONS = [:none, :hyphen2underscore, :underscore2hyphen]
