@@ -290,7 +290,7 @@ class OutWebPage
       if hdl_page.http_redirect?
         oid = hdl_page.redirect_location
       else
-        log.warn "Handle #{rec_key} does not redirect to a URI; cannot determine OID for this record"
+        $LOG.warn "Handle #{rec_key} does not redirect to a URI; cannot determine OID for this record"
         @is_repo_oid_calc = true
         @repo_oid_cached = nil
         return @repo_oid_cached
@@ -298,7 +298,7 @@ class OutWebPage
     elsif is_url
       oid = rec_key
     else
-      log.warn "Key #{rec_key} is not a URI; cannot write this record"
+      $LOG.warn "Key #{rec_key} is not a URI; cannot write this record"
       @is_repo_oid_calc = true
       @repo_oid_cached = nil
       return @repo_oid_cached
