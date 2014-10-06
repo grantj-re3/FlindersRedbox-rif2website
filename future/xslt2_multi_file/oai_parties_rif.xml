@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="oai_parties_rif.xsl"?>
+<OAI-PMH>
+  <responseDate>2014-09-27T13:56:49Z</responseDate>
+  <request verb="ListRecords" resumptionToken="d1b078897326d11b90d00cb172147c4b">https://www.myuni.edu.au/mint/published/feed/oai</request>
+  <ListRecords>
+
+    <record>
+      <header>
+        <identifier>myuni.edu.au/mary-smith</identifier>
+        <datestamp>2013-11-04T22:32:08Z</datestamp>
+        <setSpec>Parties_People</setSpec>
+      </header>
+      <metadata>
+
+        <registryObjects>
+          <registryObject group="My University of Technology">
+            <key>myuni.edu.au/mary-smith</key>
+            <originatingSource type="authoritative">http://www.myuni.edu.au</originatingSource>
+            <party type="person" dateModified="2010-07-02T14:33:40Z">
+              <identifier type="AU-ANL:PEAU">http://nla.gov.au/nla.party-1472115</identifier>
+              <identifier type="uri">http://myuni.edu.au/mary-smith</identifier>
+              <name type="primary">
+                <namePart type="title">Professor</namePart>
+                <namePart type="given">Mary</namePart>
+                <namePart type="family">Smith</namePart>
+              </name>
+              <relatedObject>
+                <key>10378.3/8085/1018.2598</key>
+                <relation type="isCollectorOf">
+                  <description>Primary Contact</description>
+                </relation>
+              </relatedObject>
+              <relatedObject>
+                <key>10378.3/8085/1018.255</key>
+                <relation type="isParticipantIn"/>
+              </relatedObject>
+              <relatedInfo type="website">
+                <identifier type="url">http://eprints.myuni.edu.au/view/person/Smith_Mary.html</identifier>
+                <notes>Access to Professor Mary Smith's publications.</notes>
+              </relatedInfo>
+            </party>
+          </registryObject>
+        </registryObjects>
+
+      </metadata>
+    </record>
+
+    <record>
+      <header>
+        <identifier>myuni.edu.au/joe-bloggs</identifier>
+        <datestamp>2013-11-04T22:32:08Z</datestamp>
+        <setSpec>Parties_People</setSpec>
+      </header>
+      <metadata>
+
+        <registryObjects>
+          <registryObject group="My University of Technology">
+            <key>myuni.edu.au/joe-bloggs</key>
+            <originatingSource type="authoritative">http://www.myuni.edu.au</originatingSource>
+            <party type="person" dateModified="2010-07-02T14:33:40Z">
+              <identifier type="AU-ANL:PEAU">http://nla.gov.au/nla.party-1472116</identifier>
+              <identifier type="uri">http://myuni.edu.au/joe-bloggs</identifier>
+              <name type="primary">
+                <namePart type="title">Dr</namePart>
+                <namePart type="given">Joe</namePart>
+                <namePart type="family">Bloggs</namePart>
+              </name>
+              <relatedObject>
+                <key>10378.3/8085/1018.2599</key>
+                <relation type="isCollectorOf">
+                  <description>Primary Contact</description>
+                </relation>
+              </relatedObject>
+              <relatedObject>
+                <key>10378.3/8085/1018.256</key>
+                <relation type="isParticipantIn"/>
+              </relatedObject>
+              <relatedInfo type="website">
+                <identifier type="url">http://eprints.myuni.edu.au/view/person/Joe_Bloggs.html</identifier>
+                <notes>Publications by Dr Joe Bloggs.</notes>
+              </relatedInfo>
+            </party>
+          </registryObject>
+        </registryObjects>
+
+      </metadata>
+    </record>
+
+    <resumptionToken>2bbb6465b017111eecf83e351a508a29</resumptionToken>
+  </ListRecords>
+</OAI-PMH>

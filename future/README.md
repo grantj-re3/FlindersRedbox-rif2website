@@ -28,3 +28,21 @@ and Firefox 25.0 (both under Linux Fedora release 20).
 1. Use XSLT 2.0 to wrap URLs in HTML hyperlinks (as this is a task ideally
    suited to a function or macro and XSLT 2.0 supports functions). [New]
 
+You can see a very rough example which I have tested using the
+Saxon processor and Firefox 25.0 (both under Linux Fedora release 20).
+The folder *xslt2_single_file* shows these XSLT2 features except
+for writing each RIF-CS record into an individual file.
+- XSLT file: party_rif2.xsl
+- RIF-CS file: party_rif2.xml -- derived from
+  http://ands.org.au/guides/cpguide/cpgparty.html; RIF-CS examples;
+  Example of a party record for a person (fictional record)
+
+You can see a very rough example which I have tested using the
+Saxon processor and Firefox 25.0 (both under Linux Fedora release 20).
+The folder *xslt2_multi_file* shows all these XSLT2 features
+including writing each RIF-CS record into an individual file.
+- XSLT file: oai_parties_rif.xsl
+- RIF-CS file: oai_parties_rif.xml -- derived from
+  http://ands.org.au/guides/cpguide/cpgparty.html; RIF-CS examples;
+  Example of a party record for a person (fictional record)
+

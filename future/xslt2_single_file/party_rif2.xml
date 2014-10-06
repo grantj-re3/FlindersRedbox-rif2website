@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="party_rif1.xsl"?>
+<registryObjects>
+<registryObject group="My University of Technology">
+    <key>myuni.edu.au/mary-smith</key>
+    <originatingSource type="authoritative">https://www.myuni.edu.au</originatingSource>
+    <party type="person" dateModified="2010-07-02T14:33:40Z">
+        <identifier type="AU-ANL:PEAU">http://nla.gov.au/nla.party-1472115</identifier>
+        <identifier type="uri">http://myuni.edu.au/mary-smith</identifier>
+        <name type="primary">
+            <namePart type="title">Professor</namePart>
+            <namePart type="given">Mary</namePart>
+            <namePart type="family">Smith</namePart>
+        </name>
+        <relatedObject>
+            <key>10378.3/8085/1018.2598</key>
+            <relation type="isCollectorOf">
+                <description>Primary Contact</description>
+            </relation>
+        </relatedObject>
+        <relatedObject>
+            <key>10378.3/8085/1018.255</key>
+            <relation type="isParticipantIn"/>
+        </relatedObject>
+        <relatedInfo type="website">
+            <identifier type="url">http://eprints.myuni.edu.au/view/person/Smith_Mary.html</identifier>
+            <notes>Access to Professor Mary Smith's publications.</notes>
+        </relatedInfo>
+    </party>
+</registryObject>
+</registryObjects> 
+

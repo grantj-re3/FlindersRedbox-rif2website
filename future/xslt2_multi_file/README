@@ -1,0 +1,23 @@
+
+# Party RIF-CS record(s) for a fictional person is based on one
+# from ANDS at URL:
+http://ands.org.au/guides/cpguide/cpgparty.html
+
+# I made changes to the RIF-CS record so it starts like this:
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="MY_XSLT_FILE.xsl"?>
+<registryObjects>
+...
+
+##############################################################################
+# I used the XSLT 2.0 processor/translator provided by Saxonica
+#   java -jar /usr/share/java/saxon.jar -s:SRC_XML -xsl:STYLESHEET
+http://www.saxonica.com/documentation/using-xsl/commandline.html
+
+# I applied the template oai_parties_rif.xsl to the OAI-PMH (RIF-CS records) using:
+java -jar /usr/share/java/saxon.jar -s:oai_parties_rif.xml -xsl:oai_parties_rif.xsl
+
+# I viewed records in my (Linux) web browser at URL:
+file://MY_DIR_PATH/rif2website/future/xslt2_multi_file/outdir/joe-bloggs.html
+file://MY_DIR_PATH/rif2website/future/xslt2_multi_file/outdir/mary-smith.html
+
