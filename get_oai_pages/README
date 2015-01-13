@@ -1,0 +1,15 @@
+
+PURPOSE
+
+To read OAI-PMH (XML) pages via a network connection & generate an
+output file for each page.
+
+
+DEVELOPMENT HISTORY
+
+This program in this directory (get_oai_pages) does not require
+rif2website, nor does rif2website require this program.
+
+get_oai_pages was developed after rif2website and large sections of code
+were derived from it. Hence you will notice significant similarities.
+
