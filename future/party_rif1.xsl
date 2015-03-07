@@ -2,13 +2,42 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:output method="html" version="4.0"/>
 
+  <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+  <!-- Custom function-behaviour: Write string argument as a hyperlink -->
+  <xsl:template name="toHyperlink">
+    <xsl:param name="url_string"/>
+
+    <a>
+      <xsl:attribute name="href">
+        <xsl:value-of select="$url_string" />
+      </xsl:attribute>
+      <xsl:value-of select="$url_string" />
+    </a>
+
+  </xsl:template>
+
+  <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+  <!-- Custom function-behaviour: If string is a URL, write it in a hyperlink -->
+  <xsl:template name="toHyperlinkIfUrl">
+    <xsl:param name="text_or_url"/>
+
+    <xsl:choose>
+      <xsl:when test="starts-with($text_or_url, 'http://') or starts-with($text_or_url, 'https://')">
+        <xsl:call-template name="toHyperlink">
+          <xsl:with-param name="url_string" select="$text_or_url"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy-of select="$text_or_url" />
+      </xsl:otherwise>
+    </xsl:choose>
+
+  </xsl:template>
+
+  <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
   <!-- Root template -->
   <xsl:template match="/">
-
-    <xsl:variable name="heading_str">
-      <xsl:value-of select="'XSLT 1.0: RIF-CS to HTML example'"/>
-    </xsl:variable>
-
+    <xsl:variable name="heading_str" as="xs:string" select="'XSLT 1.0: RIF-CS to HTML example'"/>
     <html>
     <head>
       <title><xsl:copy-of select="$heading_str" /></title>
@@ -21,7 +50,7 @@
     </head>
     <body>
       <h2><xsl:copy-of select="$heading_str" /></h2>
-      This is a XSLT 1.0 example without using EXSLT.
+      <p>This is a XSLT 1.0 example without using EXSLT.</p>
       <xsl:apply-templates select="/registryObjects/registryObject/party"/>
     </body>
     </html>
@@ -40,12 +69,12 @@
       <th>Value</th>
     </tr>
 
-  <xsl:apply-templates select="name/namePart"/>
-  <xsl:apply-templates select="relatedObject"/>
-  <xsl:apply-templates select="relatedInfo"/>
-  <xsl:apply-templates select="identifier"/>
+    <xsl:apply-templates select="name/namePart"/>
+    <xsl:apply-templates select="relatedObject"/>
+    <xsl:apply-templates select="relatedInfo"/>
+    <xsl:apply-templates select="identifier"/>
 
-  <xsl:apply-templates select="/registryObjects/registryObject/key|/registryObjects/registryObject/originatingSource"/>
+    <xsl:apply-templates select="/registryObjects/registryObject/key | /registryObjects/registryObject/originatingSource"/>
 
     </table>
   </xsl:template>
@@ -65,8 +94,6 @@
         <strong><em><xsl:value-of select="."/></em></strong>
       </td>
     </tr>
-    <tr>
-    </tr>
   </xsl:template>
 
   <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
@@ -80,10 +107,10 @@
         <xsl:value-of select="relation/@type"/>
       </td>
       <td>
-        <xsl:value-of select="key"/>
+        <xsl:call-template name="toHyperlinkIfUrl">
+          <xsl:with-param name="text_or_url" select="key"/>
+        </xsl:call-template>
       </td>
-    </tr>
-    <tr>
     </tr>
   </xsl:template>
 
@@ -98,13 +125,15 @@
         <xsl:value-of select="identifier/@type"/>
       </td>
       <td>
-        <xsl:value-of select="identifier"/>
+        <xsl:call-template name="toHyperlinkIfUrl">
+          <xsl:with-param name="text_or_url" select="identifier"/>
+        </xsl:call-template>
       </td>
-    </tr>
-    <tr>
     </tr>
   </xsl:template>
 
+  <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+  <!-- Show one row of a 3-column table -->
   <xsl:template match="identifier">
     <tr>
       <td>
@@ -114,10 +143,10 @@
         <xsl:value-of select="@type"/>
       </td>
       <td>
-        <xsl:value-of select="."/>
+        <xsl:call-template name="toHyperlinkIfUrl">
+          <xsl:with-param name="text_or_url" select="current()"/>
+        </xsl:call-template>
       </td>
-    </tr>
-    <tr>
     </tr>
   </xsl:template>
 
@@ -131,29 +160,13 @@
       </td>
 
       <td>
+        &#160;
       </td>
 
       <td>
-        <xsl:variable name="node_value">
-          <xsl:value-of select="."/>
-        </xsl:variable>
-
-        <xsl:choose>
-          <xsl:when test="starts-with($node_value, 'http://') or starts-with($node_value, 'https://')">
-            <!-- String is a URL; display as a hyperlink -->
-            <a>
-              <xsl:attribute name="href">
-                <xsl:copy-of select="$node_value" />
-              </xsl:attribute>
-              <xsl:copy-of select="$node_value" />
-            </a>
-          </xsl:when>
-          <xsl:otherwise>
-            <!-- String is not a URL; display without modification -->
-            <xsl:copy-of select="$node_value" />
-          </xsl:otherwise>
-        </xsl:choose>
-
+        <xsl:call-template name="toHyperlinkIfUrl">
+          <xsl:with-param name="text_or_url" select="current()"/>
+        </xsl:call-template>
       </td>
     </tr>
   </xsl:template>

@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<?xml-stylesheet type="text/xsl" href="party_rif1.xsl"?>
+<?xml-stylesheet type="text/xsl" href="party_rif2.xsl"?>
 <registryObjects>
 <registryObject group="My University of Technology">
     <key>myuni.edu.au/mary-smith</key>
-    <originatingSource type="authoritative">https://www.myuni.edu.au</originatingSource>
+    <originatingSource type="authoritative">http://www.myuni.edu.au</originatingSource>
     <party type="person" dateModified="2010-07-02T14:33:40Z">
         <identifier type="AU-ANL:PEAU">http://nla.gov.au/nla.party-1472115</identifier>
         <identifier type="uri">http://myuni.edu.au/mary-smith</identifier>
