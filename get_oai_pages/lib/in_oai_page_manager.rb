@@ -36,6 +36,7 @@ class InOaiPageManager
   ############################################################################
   def initialize(url_str_without_query=OAI_URL_BASE_STRING)
     @url_base_str = url_str_without_query
+    @query_str_verb = QUERY_STRING_PART1
     @query_str_next_page = QUERY_STRING_PART2_INITIAL
     @is_next_url_str_valid = true
 
@@ -47,10 +48,45 @@ class InOaiPageManager
   end
 
   ############################################################################
+  # Allows a complete OAI-PMH initial URL to be specified (instead of using
+  # the default URL). The URL is split into its component parts.
+  ############################################################################
+  def set_full_url(full_url)
+    @url_base_str = @query_str_verb = @query_str_next_page = query_str = ''
+    msg = <<-MSG_BAD_URL.gsub(/^\t*/, '')
+	ERROR! Bad initial URL for the OAI-PMH 'ListRecords' verb was supplied:
+	  '#{full_url}'
+
+	Valid examples are:
+	  'http://example.com/myapp/harvest?verb=ListRecords&metadataPrefix=oai_dc'
+	  'https://example.com/myapplic/oai?verb=ListRecords&metadataPrefix=my_oai_md&set=myset'
+
+	- Initial URLs must not specify a resumption token.
+	- The URLs are shown within quotes as these are probably needed to escape
+	  special characters (eg. "&") from the Unix shell.
+    MSG_BAD_URL
+
+    begin
+      @url_base_str, query_str = full_url.match(/^([^\?]*)\?(.*)$/)[1,2]	# full_url = @url_base_str+'?'+query_str 
+      @query_str_verb = query_str.match(/(verb=[^&]*)(&|$)/)[1]			# Extract 'verb=XXXX'
+      @query_str_next_page = query_str.sub(@query_str_verb, '').sub(/&&/, '&').sub(/^&|&$/, '') # All query string except 'verb=XXXX&'
+    rescue Exception => ex
+      STDERR.puts msg
+      exit 2
+    end
+
+    if [@url_base_str, @query_str_verb, @query_str_next_page].include?('') ||
+      query_str.match(/resumptionToken/)
+        STDERR.puts msg
+        exit 2
+    end
+  end
+
+  ############################################################################
   # Gives the URL of the page to be fetched when next_page() is invoked
   ############################################################################
   def next_url_str
-    "#{@url_base_str}?#{QUERY_STRING_PART1}&#{@query_str_next_page}"
+    "#{@url_base_str}?#{@query_str_verb}&#{@query_str_next_page}"
   end
 
   ############################################################################

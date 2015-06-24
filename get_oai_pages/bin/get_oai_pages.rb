@@ -54,12 +54,19 @@ class GetOaiPages
   # 2. The last OAI-PMH page has an empty <resumptionToken> element.
   ############################################################################
   def self.main
+    if %w{-h --help}.include?(ARGV[0])
+      STDERR.puts "#{File.basename($0)}  [ OAIPMH_INITIAL_URL ]"
+      exit 0
+    end
     mgr = InOaiPageManager.new
+    mgr.set_full_url(ARGV[0]) if ARGV.length > 0
+
     while mgr.next_page
       fname = eval OUT_PAGE_FILENAME_CMD
       STDERR.puts "Saving file: #{fname}"
       File.write_string(fname, mgr.page)
     end
+    exit 0
   end
 
 end
