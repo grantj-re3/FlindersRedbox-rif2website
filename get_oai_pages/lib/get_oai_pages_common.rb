@@ -32,7 +32,7 @@ module GetOaiPagesCommon
   # OAI-PMH verb
   QUERY_STRING_PART1 = 'verb=ListRecords'
   QUERY_STRING_PART2_INITIAL = 'metadataPrefix=ore&set=hdl_123456789_6226'
-  XPATH_NEXT_PAGE = 'ListRecords/resumptionToken'
+  XPATH_NEXT_PAGE = '//resumptionToken'
 
   ############################################################################
   # Web page access constants
