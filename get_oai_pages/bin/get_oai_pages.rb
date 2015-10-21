@@ -11,6 +11,30 @@
 # To read OAI-PMH (XML) pages via a network connection & generate an
 # output file for each page.
 #
+# OAI-PMH PAGE STRUCTURE
+#
+#   <OAI-PMH ...>
+#       ...
+#       <ListRecords>
+#           <record>
+#               <header>
+#                 ...
+#               </header>
+#               <metadata>
+#                   ...info...
+#               </metadata>
+#           </record>
+#		
+#             ...more records within <record>...</record> elements...
+#		
+#           <resumptionToken>...</resumptionToken>
+#       </ListRecords>
+#   </OAI-PMH>
+#
+# Notes:
+# 1. A <header> with a status of "deleted" does not have a <metadata>
+#    section.
+# 2. The last OAI-PMH page has an empty <resumptionToken> element.
 #++
 ##############################################################################
 # Add dirs to the library path
@@ -83,8 +107,7 @@ class GetOaiPages
     if ARGV.length == 0
       STDERR.puts "OAIPMH_INITIAL_URL not found.\n\n#{msg}"
       exit 1
-    end
-    if ARGV.length > 1
+    elsif ARGV.length > 1
       STDERR.puts "Unrecognised options or too many arguments:\n  #{ARGV.join(' ')}\n\n#{msg}"
       exit 1
     end
@@ -92,31 +115,7 @@ class GetOaiPages
   end
 
   ############################################################################
-  # The main method for this program
-  #
-  # OAI-PMH pages are structured as below.
-  #
-  #   <OAI-PMH ...>
-  #       ...
-  #       <ListRecords>
-  #           <record>
-  #               <header>
-  #                 ...
-  #               </header>
-  #               <metadata>
-  #                   ...info...
-  #               </metadata>
-  #           </record>
-  #		
-  #             ...more records within <record>...</record> elements...
-  #		
-  #           <resumptionToken>...</resumptionToken>
-  #       </ListRecords>
-  #   </OAI-PMH>
-  # Notes:
-  # 1. A <header> with a status of "deleted" does not have a <metadata>
-  #    section.
-  # 2. The last OAI-PMH page has an empty <resumptionToken> element.
+  # The main method for this class
   ############################################################################
   def self.main
     opts = get_command_line_options
