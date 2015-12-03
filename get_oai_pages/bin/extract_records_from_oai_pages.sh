@@ -41,7 +41,8 @@
 #
 ##############################################################################
 app=`basename $0`
-fname_prefix_record_out="rec_"		# Future: Command line param
+fname_prefix_record_out="rec"		# Future: Command line param
+fname_suffix_delim="."
 
 # Format input XML using xmllint: 1=format input XML file; 0=do not format
 will_format_xml_input=1			# Future: Command line param
@@ -81,12 +82,25 @@ extract_records_into_files() {
 usage_exit() {
 	exit_code="$1"
 	msg="$2"
-	cat <<-EOM_USAGE
+
+	cat <<-EOM_USAGE >&2
 		$msg
-		Usage:         $app  XML_FILE1 XML_FILE2 ...
-		               $app  -h|--help
-		Example usage: $app  oai_dc_00*.xml
+		Usage:
+		  $app  XML_FILE1 XML_FILE2 ...
+		  $app  -h|--help
+
+		Example usage:
+		  $app  path/to/oai_dc_page00*.xml
+
+		may result in output files such as:
+		  ...
 	EOM_USAGE
+
+	rec_name_prefix="$fname_prefix_record_out"
+	rec_name_suffix="oai_dc_page0033.xml"
+	for rec_num_accum in {330..332}; do
+        	printf "  %s%06d%s\n" "$rec_name_prefix" "$rec_num_accum" "$fname_suffix_delim$rec_name_suffix" >&2
+	done
 	exit "$exit_code"
 }
 
@@ -96,19 +110,20 @@ usage_exit() {
 [ "$1" = -h -o "$1" = --help ] && usage_exit 0
 [ $# = 0 ] && usage_exit 1 "You must specify at least one OAI-PMH XML list-file (ie. page-file)."
 
+if [ $will_format_xml_input = 1 ]; then
+  fmt_cmd="xmllint --format"
+else
+  fmt_cmd="cat"
+fi
+
 echo "Extracting OAI-PMH records"
 accum_rec_count=0
 
-for fname in $@; do
-  printf "Processing OAI-PMH page $fname:"
+for fname_in in $@; do
+  printf "Processing OAI-PMH page $fname_in:"
+  fname_in_base=`basename "$fname_in"`
 
-  if [ $will_format_xml_input = 1 ]; then
-    fmt_cmd="xmllint --format"
-  else
-    fmt_cmd="cat"
-  fi
-
-  cmd="$fmt_cmd \"$fname\" |extract_records_into_files \"$accum_rec_count\" \"$fname_prefix_record_out\" \".$fname\""
+  cmd="$fmt_cmd \"$fname_in\" |extract_records_into_files \"$accum_rec_count\" \"$fname_prefix_record_out\" \"$fname_suffix_delim$fname_in_base\""
   msg=`eval $cmd`
   printf " %s\n" "$msg"
   accum_rec_count=`echo "$msg" |tail -1 |sed 's~^.*: ~~' |tr -dc 0-9`
