@@ -54,7 +54,7 @@ class InOaiPageManager
   def set_full_url(full_url)
     @url_base_str = @query_str_verb = @query_str_next_page = query_str = ''
     msg = <<-MSG_BAD_URL.gsub(/^\t*/, '')
-	ERROR! Bad initial URL for the OAI-PMH 'ListRecords' verb was supplied:
+	ERROR! Bad initial URL for OAI-PMH was supplied:
 	  '#{full_url}'
 
 	Valid examples are:
@@ -75,7 +75,7 @@ class InOaiPageManager
       exit 2
     end
 
-    if [@url_base_str, @query_str_verb, @query_str_next_page].include?('') ||
+    if [@url_base_str, @query_str_verb].include?('') ||
       query_str.match(/resumptionToken/)
         STDERR.puts msg
         exit 2
