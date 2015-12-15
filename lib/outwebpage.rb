@@ -108,18 +108,20 @@ class OutWebPage
       return
     end
 
+    @doc = doc
+    @repo_oid_cached = nil	# Cached ReDBox-Mint OID. Only use in repo_oid()
+    @is_repo_oid_calc = false	# Is @repo_oid_cached calculated yet? Only use in repo_oid()
+
     @@object_count += 1
     if self.class.record_types_with_rulesets.include?(rec_type)
       $LOG.info "[#{@@object_count}] RIF-CS record '#{rec_type}' -- processing"
       @rec_type = rec_type
     else
       $LOG.warn "[#{@@object_count}] RIF-CS record '#{rec_type}' -- bypass processing (no rules found)"
+      $LOG.warn "Cannot write html file for OID: '#{repo_oid}'"
       @rec_type = nil
       return
     end
-    @doc = doc
-    @repo_oid_cached = nil	# Cached ReDBox-Mint OID. Only use in repo_oid()
-    @is_repo_oid_calc = false	# Is @repo_oid_cached calculated yet? Only use in repo_oid()
 
     @out_file_path = output_file_path
     return unless @out_file_path
