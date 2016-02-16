@@ -30,12 +30,12 @@ PATH=/bin:/usr/bin:/usr/local/bin; export PATH
 # or under /usr/share/zoneinfo on many Linux systems.
 #TZ=Australia/South; export TZ		# Eg. America/New_York or Australia/South
 
-BIN_DIR=$HOME/opt/rif2website
-EXE_FNAME=rif2website.rb
+PARENT_DIR=$HOME/opt/rif2website
+EXE_FPATH=$PARENT_DIR/bin/rif2website.rb
 
 WEB_APP_LIST="mint redbox"	# One or both of "mint redbox" (space separated)
 
-IMAGES_CSS_TARBALL=$HOME/opt/rif2website/etc/images_css.tar.gz	# Source of CSS, images, etc
+IMAGES_CSS_TARBALL=$PARENT_DIR/etc/images_css.tar.gz	# Source of CSS, images, etc
 HOST=`hostname -s`
 VHOST="${HOST}pub"		# Apache virtual host name (eg. 'metadatastore')
 WWW_PARENT=/var/www/$VHOST/md
@@ -133,7 +133,7 @@ for web_app in $WEB_APP_LIST; do
     validate_dir "$dir"
   done
 
-  cmd="cd \"$BIN_DIR\" && ruby $EXE_FNAME --$web_app"
+  cmd="ruby $EXE_FPATH --$web_app"
   do_command "$cmd" $VERBOSE "Write *${web_app}* static pages to intermediate directory"
 
   cmd="tar zxpf \"$IMAGES_CSS_TARBALL\" -C \"$INTERMED_WEBSITE_DIR\""

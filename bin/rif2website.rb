@@ -22,8 +22,10 @@ require 'fileutils'
 require 'rexml/document'
 require 'rexml/xpath'
 
+# Add dirs to the library path
+$: << File.expand_path("../lib", File.dirname(__FILE__))
+
 # Load application library files
-$: << 'lib'			# Add lib subdir to the load/require-path.
 require 'inrifpagemanager'
 require 'object_extra'
 require 'outwebpage'
@@ -42,12 +44,13 @@ class RifToWebsite
   USER_AGENT = "#{File.basename(__FILE__)}/#{VERSION} (ruby)"
 
   # Logger will write to this filename. (Can also set to STDOUT).
-  LOG_FILENAME = "#{File.dirname(__FILE__)}/#{self}.log"
+  LOG_FILENAME = "#{File.expand_path('../log', File.dirname(__FILE__))}/#{self}.log"
 
   # We will load/require config files first, then rule files.
+  ETC_DIRNAME = File.expand_path("../etc", File.dirname(__FILE__))
   REQUIRE_CONFIG_FILES = {
-    'config' => 'etc/conf*.rb',
-    'rule' => 'etc/rule*.rb'
+    'config' => "#{ETC_DIRNAME}/conf*.rb",
+    'rule' => "#{ETC_DIRNAME}/rule*.rb"
   }
 
   # RIF-CS record types
@@ -61,9 +64,8 @@ class RifToWebsite
     $LOG.info '-' * 30
     $LOG.info "Starting #{File.basename(__FILE__)} :: v#{VERSION} :: #{self}.#{__method__}"
 
-    REQUIRE_CONFIG_FILES.sort.each{|file_type, rel_file_path_glob|
-      config_paths = "#{File.dirname(__FILE__)}/#{rel_file_path_glob}"
-      Dir.glob(config_paths).sort.each{|fpath|
+    REQUIRE_CONFIG_FILES.sort.each{|file_type, file_path_glob|
+      Dir.glob(file_path_glob).sort.each{|fpath|
         $LOG.info "Loading #{file_type} file: #{fpath}"
         begin
           require fpath
