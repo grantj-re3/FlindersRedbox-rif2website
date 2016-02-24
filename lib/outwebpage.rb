@@ -86,7 +86,7 @@ class OutWebPage
   @@record_types_with_rules = nil  # Do not access directly, except within record_types_with_rulesets()
   @@repo_name = nil			# 'redbox' or 'mint' or nil
 
-  attr_reader :out_file_path
+  attr_reader :out_file_path, :to_s_html
 
   # Create an OutWebPage object. If processing rules have been defined for
   # this record-type, then:

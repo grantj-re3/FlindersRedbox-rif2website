@@ -21,6 +21,7 @@ require 'getoptlong'
 require 'fileutils'
 require 'rexml/document'
 require 'rexml/xpath'
+require 'yaml'
 
 # Add dirs to the library path
 $: << File.expand_path("../lib", File.dirname(__FILE__))
@@ -39,12 +40,16 @@ require 'outwebpage'
 # web pages.
 class RifToWebsite
   # Version of this program
-  VERSION = '0.2rc1'
+  VERSION = '0.3rc1'
   # Web client user-agent header
   USER_AGENT = "#{File.basename(__FILE__)}/#{VERSION} (ruby)"
 
   # Logger will write to this filename. (Can also set to STDOUT).
   LOG_FILENAME = "#{File.expand_path('../log', File.dirname(__FILE__))}/#{self}.log"
+
+  SERIAL_OBJECT = YAML			# Object-serialisation: YAML or Marshal
+  VAR_DIRNAME = File.expand_path("../var", File.dirname(__FILE__))
+  SUMMARY_STATUS_FILENAME_PREFIX = "#{VAR_DIRNAME}/summary_status"
 
   # We will load/require config files first, then rule files.
   ETC_DIRNAME = File.expand_path("../etc", File.dirname(__FILE__))
@@ -53,9 +58,13 @@ class RifToWebsite
     'rule' => "#{ETC_DIRNAME}/rule*.rb"
   }
 
+  # Internal datestamp format
+  STRFTIME_FMT = '%Y-%m-%d %H:%M:%S %Z'
+
   # RIF-CS record types
   RIF_RECORD_TYPES = %w(party activity service collection)
 
+  ############################################################################
   # The main method for this program
   def self.main
     $LOG = Logger.new(LOG_FILENAME)
@@ -77,7 +86,8 @@ class RifToWebsite
     }
     $LOG.level = Config[:log_level] if defined?(Config[:log_level]) && Config[:log_level].class == Fixnum
 
-    process = do_redbox_or_mint
+    process, oai_from, oai_until = get_clopts
+    Config[:app] = process
     if process
       hash_name = "Config#{process.to_s.capitalize}"
 
@@ -97,44 +107,70 @@ class RifToWebsite
     if tpl_fname && File.readable?(tpl_fname)
       $LOG.info "Using HTML template file '#{tpl_fname}'"
       create_root_dir
-      process_rif_records
+      process_rif_records(oai_from, oai_until)
     else
       $LOG.fatal "Config[:html_template_filename] is not set or file '#{tpl_fname}' is not readable. Cannot create web pages without an HTML template!"
     end
     $LOG.info "Ending #{File.basename(__FILE__)}"
   end
 
+  ############################################################################
+  # Get Command Line options
+  #
   # This method determines if this program has been instructed
   # via the command line interface to process either the
-  # ReDBox or Mint RIF-CS portal. The method will return
+  # ReDBox or Mint OAI-PMH interface. The method will return
   # "mint" or "redbox" if invoked with:
   #   --mint
   # or
   #   --redbox
-  # switches respectively. If invoked with some other switch or without
+  # switches respectively. The method also permits incremental
+  # harvesting from the OAI-PMH interface by permitting 'from'
+  # and/or 'until' optional datestamps to be passed to OAI-PMH.
+  # If invoked with some other switch or without
   # any switch, the method will display a usage error message in the
   # log then exit the program.
-  def self.do_redbox_or_mint
+  def self.get_clopts
     opts = GetoptLong.new(
       ["--mint", GetoptLong::NO_ARGUMENT],
-      ["--redbox", GetoptLong::NO_ARGUMENT]
+      ["--redbox", GetoptLong::NO_ARGUMENT],
+      ["--from", GetoptLong::REQUIRED_ARGUMENT],
+      ["--until", GetoptLong::REQUIRED_ARGUMENT]
     )
-    process = nil  # :mint or :redbox
+    process = nil	# :mint or :redbox
+    oai_from = nil	# Optional OAI-PMH from datestamp
+    oai_until = nil	# Optional OAI-PMH until datestamp
     begin
       opts.each{|opt, arg|
-        $LOG.info "Script invoked with option: #{opt}"
-        process = opt.sub(/^--/, '').to_sym
+        case opt
+        when "--mint","--redbox"
+          $LOG.info "Script invoked with option: #{opt}"
+          process = opt.sub(/^--/, '').to_sym
+        when "--from"
+          $LOG.info "Script invoked with option: #{opt} #{arg}"
+          oai_from = arg
+        when "--until"
+          $LOG.info "Script invoked with option: #{opt} #{arg}"
+          oai_until = arg
+        else
+          $LOG.fatal "Unrecognised option: #{opt}"
+        end
       }
     rescue Exception => ex
       exit 1
     end
-    unless process
-      $LOG.fatal "Usage: #{File.basename($0)}  --mint | --redbox"
-      exit 1
-    end
-    process
+    usage_exit unless process
+    [process, oai_from, oai_until]
   end
 
+  ############################################################################
+  def self.usage_exit
+    $LOG.fatal "Usage: #{File.basename($0)}  --mint|--redbox [--from DATE] [--until DATE]"
+    $LOG.fatal " where DATE is OAI-PMH UTC date with format YYYY-MM-DD or YYYY-MM-DDThh:mm:ssZ"
+    exit 1
+  end
+
+  ############################################################################
   # This method creates a path to the web root directory, making
   # parent directories as needed.
   def self.create_root_dir
@@ -149,7 +185,7 @@ class RifToWebsite
     end
   end
 
-##############################################################################
+  ############################################################################
   # Process all of the RIF-CS records as follows.
   # * Iterate through all OAI-PMH pages
   #   * Iterate through each RIF-CS record on each of those pages and
@@ -181,13 +217,12 @@ class RifToWebsite
   # 1. A <header> with a status of "deleted" does not have a <metadata>
   #    section, hence no RIF-CS information.
   # 2. The last OAI-PMH page does not have a <resumptionToken> section.
-  def self.process_rif_records
+  def self.process_rif_records(oai_from, oai_until)
     $LOG.info "Action-methods available for rules: #{OutWebPage.new(nil, nil).action_methods.join(', ')}"
 
-
-    summary_fields = []
+    summary_recs = {}		# Stored records to support incremental update to summary of static pages
     rec_regex_str = "^(#{RIF_RECORD_TYPES.join('|')})$"
-    mgr = InRifPageManager.new
+    mgr = InRifPageManager.new(oai_from, oai_until)
     while mgr.next_page
       # XPath points to the node where xmlns ("rif") is defined.
       xpath_ns = "ListRecords/record/metadata/#{Config[:ns_prefix_rif]}registryObjects"
@@ -204,7 +239,10 @@ class RifToWebsite
             out = OutWebPage.new(rec_type, doc_record)
             if out.valid?
               out.write_to_file
-              summary_fields << out.get_summary
+              summary_recs[out.out_file_path] = {}
+              summary_recs[out.out_file_path][:deleted] = false
+              summary_recs[out.out_file_path][:html_empty] = out.to_s_html.empty?
+              summary_recs[out.out_file_path][:summary] = out.get_summary
             end
           end
         }
@@ -222,14 +260,68 @@ class RifToWebsite
         out = OutWebPage.new(OutWebPage::REC_TYPE_DELETED, doc_record)
         if out.valid?
           out.write_to_file
-          summary_fields << out.get_summary
+          summary_recs[out.out_file_path] = {}
+          summary_recs[out.out_file_path][:deleted] = true
+          summary_recs[out.out_file_path][:html_empty] = out.to_s_html.empty?
+          summary_recs[out.out_file_path][:summary] = out.get_summary
         end
       }
     end
+    is_full_harvest = oai_from.nil? && oai_until.nil?
+    write_summary(summary_recs, is_full_harvest)
+  end
+
+  ############################################################################
+  def self.summary_status_filename
+    "#{SUMMARY_STATUS_FILENAME_PREFIX}.#{Config[:app]}.#{SERIAL_OBJECT}"
+  end
+
+  ############################################################################
+  # Write summary of all pages (not only incrementally harvested pages) to
+  # a file.
+  def self.write_summary(summary_recs, is_full_harvest)
+    $LOG.debug "INITIAL  summary_recs: #{summary_recs.inspect}"
+    summary_status = {}
+
+    now = Time.now
+    now_str = "#{now.strftime(STRFTIME_FMT)} [#{now.utc.strftime(STRFTIME_FMT)}]"
+    if is_full_harvest
+      summary_status[:most_recent_date_full_harvest] = now_str
+      summary_status[:most_recent_date_incr_harvest_wo_status] = nil
+    else			# Incremental harvest
+      if File.exists?(summary_status_filename)
+        # Merge rec summaries from incremental harvest with rec summaries of
+        # all previous harvests. Allow new summaries to overwrite previous
+        # ones if they have identical hash-keys, except for:
+        # - :most_recent_date_full_harvest
+        # - :most_recent_date_incr_harvest_wo_status
+        #
+        # BEWARE: This only adds to summary items. In future may need to
+        # remove items from previous harvests.
+        prev_summary_status = SERIAL_OBJECT.load(File.read(summary_status_filename))
+        $LOG.debug "PREVIOUS summary_status: #{prev_summary_status.inspect}"
+        summary_recs = prev_summary_status[:records].merge(summary_recs) if prev_summary_status[:records]
+        [:most_recent_date_full_harvest, :most_recent_date_incr_harvest_wo_status].each{|k|
+          summary_status[k] = prev_summary_status[k]
+        }
+        $LOG.debug "MERGED   summary_recs: #{summary_recs.inspect}"
+      else
+        $LOG.warn "File '#{summary_status_filename}' not found. It is needed to create a summary of all records."
+        summary_status[:most_recent_date_full_harvest] = nil
+        summary_status[:most_recent_date_incr_harvest_wo_status] = now_str
+      end
+    end
+    $LOG.info "Writing summary object to file #{summary_status_filename}"
+    summary_status[:records] = summary_recs
+    obj = SERIAL_OBJECT.dump(summary_status)
+    File.write_string(summary_status_filename, obj)
+
     $LOG.info "Writing summary html text to file #{OutWebPage.output_summary_file_path}"
+    summary_fields = summary_recs.inject([]){|a,(k,val)| a << val[:summary] unless val[:html_empty]; a}
     File.write_string(OutWebPage.output_summary_file_path, to_s_html(summary_fields))
   end
 
+  ############################################################################
   # Return a summary html string based on information in the summary_fields
   # array.
   # * Argument _summary_fields_: An array of hashes. Each hash gives

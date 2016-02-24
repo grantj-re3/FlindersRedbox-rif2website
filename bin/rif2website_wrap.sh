@@ -35,6 +35,17 @@ EXE_FPATH=$PARENT_DIR/bin/rif2website.rb
 
 WEB_APP_LIST="mint redbox"	# One or both of "mint redbox" (space separated)
 
+# Ideally we should do our OAI-PMH incremental harvest from the last successful
+# harvest. However, for the time being we harvest any changes during the last
+# OAI_HOURS_AGO hours.
+# Since this job is run via cron during business hours Mon-Fri, this is a fudge
+# so that a harvest on Mon morning will capture any changes made late on Fri.
+# Hence depending on the precise cron schedule, the minimum value of
+# OAI_HOURS_AGO should be approx: 3 days - 8 hours = 64 hours.
+# Setting a higher value allows for the cron job to be switched off for a
+# few hours.
+OAI_HOURS_AGO=72
+
 IMAGES_CSS_TARBALL=$PARENT_DIR/etc/images_css.tar.gz	# Source of CSS, images, etc
 HOST=`hostname -s`
 VHOST="${HOST}pub"		# Apache virtual host name (eg. 'metadatastore')
@@ -46,7 +57,8 @@ WWW_PARENT=/var/www/$VHOST/md
 VERBOSE=1			# 1=Verbose mode on. Other (eg. 0) = Verbose mode off
 DRY_RUN=0			# 1=Do not execute commands. Other (eg. 0) = Normal execution.
 
-RSYNC_OPTS="-a --delete"	# Some useful options: "-av --delete --dry-run"
+RSYNC_OPTS="-a"			# Some useful options: "-av --dry-run"
+RSYNC_DEL_OPTS="$RSYNC_OPTS --delete"
 APP=`basename $0`		# Basename of this script
 
 ##############################################################################
@@ -113,12 +125,46 @@ validate_dir() {
 }
 
 ##############################################################################
+# Get oai_from datestamp for OAI-PMH incremental harvest
+##############################################################################
+get_oai_from() {
+  oai_from=`date -u +%FT%TZ -d "$OAI_HOURS_AGO hours ago"`
+}
+
+##############################################################################
+# Display usage then exit
+##############################################################################
+usage_exit() {
+  echo_timestamp "Usage: $APP --full-harvest|-f | --incr-harvest|-i | --help|-h"
+  exit 2
+}
+
+##############################################################################
+# Get command line options
+##############################################################################
+get_clopts() {
+  [ "$1" = --help -o "$1" = -h ] && usage_exit
+
+  if [ "$1" = --incr-harvest -o "$1" = -i ]; then
+    incr_harvest=1
+    echo_timestamp "Performing incremental harvest"
+  elif [ "$1" = --full-harvest -o "$1" = -f ]; then
+    incr_harvest=0
+    echo_timestamp "Performing full (non-incremental) harvest"
+  else
+    echo_timestamp "Unrecognised (or empty) option '$1'"
+    usage_exit
+  fi
+}
+
+##############################################################################
 # Main
 ##############################################################################
 echo_timestamp "------------------------------"
 echo_timestamp "Starting $APP"
 
 validate_ruby_version
+get_clopts $@
 
 for web_app in $WEB_APP_LIST; do
   child_dir=`echo $web_app |cut -c1`			# child_dir = 'r' for redbox; 'm' for mint
@@ -134,7 +180,12 @@ for web_app in $WEB_APP_LIST; do
   done
 
   cmd="ruby $EXE_FPATH --$web_app"
-  do_command "$cmd" $VERBOSE "Write *${web_app}* static pages to intermediate directory"
+  if [ $incr_harvest = 1 ]; then
+    get_oai_from
+    cmd="$cmd --from $oai_from"
+    msg_extra=" (incremental from $oai_from)"
+  fi
+  do_command "$cmd" $VERBOSE "Write *${web_app}* static pages to intermediate directory$msg_extra"
 
   cmd="tar zxpf \"$IMAGES_CSS_TARBALL\" -C \"$INTERMED_WEBSITE_DIR\""
   do_command "$cmd" $VERBOSE "Extract CSS, images, etc to intermediate directory"
@@ -142,10 +193,14 @@ for web_app in $WEB_APP_LIST; do
   cmd="echo \"Last updated:  `date '+%a %F %T (%z)'`\" > \"$INTERMED_WEBSITE_DIR/last_updated\""
   do_command "$cmd" $VERBOSE "Write timestamp to a file in the intermediate directory"
 
-  cmd="[ -d "$PUBLIC_WEBSITE_DIR" ] && rsync $RSYNC_OPTS \"$PUBLIC_WEBSITE_DIR/\" \"$BACKUP_WEBSITE_DIR\""
+  cmd="[ -d "$PUBLIC_WEBSITE_DIR" ] && rsync $RSYNC_DEL_OPTS \"$PUBLIC_WEBSITE_DIR/\" \"$BACKUP_WEBSITE_DIR\""
   do_command "$cmd" $VERBOSE "Sync the backup dir (from the production website). BEWARE: Potentially hazardous command!"
 
-  cmd="rsync $RSYNC_OPTS \"$INTERMED_WEBSITE_DIR/\" \"$PUBLIC_WEBSITE_DIR\""
+  if [ $incr_harvest = 1 ]; then
+    cmd="rsync $RSYNC_OPTS \"$INTERMED_WEBSITE_DIR/\" \"$PUBLIC_WEBSITE_DIR\""
+  else
+    cmd="rsync $RSYNC_DEL_OPTS \"$INTERMED_WEBSITE_DIR/\" \"$PUBLIC_WEBSITE_DIR\""
+  fi
   do_command "$cmd" $VERBOSE "Sync the production website (from the intermediate dir). BEWARE: Potentially hazardous command!"
 
   cmd="rm -rf \"$INTERMED_WEBSITE_DIR\""
