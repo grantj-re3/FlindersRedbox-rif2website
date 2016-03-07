@@ -50,6 +50,7 @@ class RifToWebsite
   SERIAL_OBJECT = YAML			# Object-serialisation: YAML or Marshal
   VAR_DIRNAME = File.expand_path("../var", File.dirname(__FILE__))
   SUMMARY_STATUS_FILENAME_PREFIX = "#{VAR_DIRNAME}/summary_status"
+  OID_FILENAME_PREFIX = "#{VAR_DIRNAME}/oid"
 
   # We will load/require config files first, then rule files.
   ETC_DIRNAME = File.expand_path("../etc", File.dirname(__FILE__))
@@ -221,6 +222,7 @@ class RifToWebsite
     $LOG.info "Action-methods available for rules: #{OutWebPage.new(nil, nil).action_methods.join(', ')}"
 
     summary_recs = {}		# Stored records to support incremental update to summary of static pages
+    repo_oids = {}		# Stored repo OIDs to reduce handle.net web traffic
     rec_regex_str = "^(#{RIF_RECORD_TYPES.join('|')})$"
     mgr = InRifPageManager.new(oai_from, oai_until)
     while mgr.next_page
@@ -243,6 +245,7 @@ class RifToWebsite
               summary_recs[out.out_file_path][:deleted] = false
               summary_recs[out.out_file_path][:html_empty] = out.to_s_html.empty?
               summary_recs[out.out_file_path][:summary] = out.get_summary
+              repo_oids[out.get_oid_key] = out.get_oid
             end
           end
         }
@@ -264,11 +267,30 @@ class RifToWebsite
           summary_recs[out.out_file_path][:deleted] = true
           summary_recs[out.out_file_path][:html_empty] = out.to_s_html.empty?
           summary_recs[out.out_file_path][:summary] = out.get_summary
+          repo_oids[out.get_oid_key] = out.get_oid
         end
       }
     end
     is_full_harvest = oai_from.nil? && oai_until.nil?
     write_summary(summary_recs, is_full_harvest)
+    write_oids(repo_oids)
+  end
+
+  ############################################################################
+  def self.oid_filename
+    "#{OID_FILENAME_PREFIX}.#{Config[:app]}.#{SERIAL_OBJECT}"
+  end
+
+  ############################################################################
+  def self.write_oids(repo_oids)
+    # Write repo OIDs to external file which behaves as a cache (so
+    # that not all OIDs need to be looked up via handle redirects).
+    # This is actually a merger of the cached file OIDs with any
+    # newly looked up OIDs if OutWebPage uses OIDs from file when
+    # they are available.
+    $LOG.info "Writing repo OIDs to file #{oid_filename}"
+    obj = SERIAL_OBJECT.dump(repo_oids)
+    File.write_string(oid_filename, obj)
   end
 
   ############################################################################

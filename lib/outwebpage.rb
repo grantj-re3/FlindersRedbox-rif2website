@@ -84,7 +84,8 @@ class OutWebPage
 ##############################################################################
   @@object_count = 0
   @@record_types_with_rules = nil  # Do not access directly, except within record_types_with_rulesets()
-  @@repo_name = nil			# 'redbox' or 'mint' or nil
+  @@repo_name = nil		# 'redbox' or 'mint' or nil
+  @@repo_oids = nil		# Hash of repo OIDs to be read from file
 
   attr_reader :out_file_path, :to_s_html
 
@@ -111,6 +112,8 @@ class OutWebPage
     @doc = doc
     @repo_oid_cached = nil	# Cached ReDBox-Mint OID. Only use in repo_oid()
     @is_repo_oid_calc = false	# Is @repo_oid_cached calculated yet? Only use in repo_oid()
+    @rec_key_cached = nil	# Cached record-key (used in external OID lookup). Only set in repo_oid()
+    @is_deleted_cached = nil	# Cached record is-deleted (used in external OID lookup). Only set in repo_oid()
 
     @@object_count += 1
     if self.class.record_types_with_rulesets.include?(rec_type)
@@ -277,6 +280,8 @@ class OutWebPage
 
     # Determine the ReDBox-Mint OID
     rec_key = nil
+    @rec_key_cached = nil
+    @is_deleted_cached = nil
     xpath_sym = @rec_type == REC_TYPE_DELETED ? :xpath_header_id_del : :xpath_key
     @doc.elements.each(Config[xpath_sym].to_s_xpath){|e| rec_key = e.text}
     unless rec_key
@@ -284,6 +289,30 @@ class OutWebPage
       return nil
     end
     $LOG.info "Record key is #{rec_key}"
+
+    @rec_key_cached = rec_key
+    @is_deleted_cached = @rec_key_cached == REC_TYPE_DELETED
+
+    unless @@repo_oids
+      if File.exists?(self.class.oid_filename)
+        $LOG.info "Loading OIDs from file #{self.class.oid_filename}"
+        @@repo_oids = RifToWebsite::SERIAL_OBJECT.load(File.read(self.class.oid_filename))
+      else
+        @@repo_oids = {}
+      end
+    end
+
+    # Do not call get_oid_key() from this method, since it calls back
+    # to this method, creating an endless loop!
+    oid_key = [@@repo_name, @rec_key_cached, @is_deleted_cached]
+    if @@repo_oids[ oid_key ]
+      # Skip network connection below if already in file.
+      # 58+74=132 records. 9m28s / 7s = 80x performance improvement!
+      @is_repo_oid_calc = true
+      @repo_oid_cached = @@repo_oids[ oid_key ]
+      $LOG.info "Found OID #{@repo_oid_cached} from previous lookup by key #{oid_key.inspect}"
+      return @repo_oid_cached
+    end
 
     is_handle = rec_key.match('^http://hdl.handle.net/.+/.+')
     is_url = rec_key.match('^http://.+/.+/.+')
@@ -305,9 +334,27 @@ class OutWebPage
       @repo_oid_cached = nil
       return @repo_oid_cached
     end
-    oid.gsub!(/^.*\//, '').gsub!(/\..*$/, '')
+    @repo_oid_cached = oid.gsub(/^.*\//, '').gsub(/\..*$/, '')
     @is_repo_oid_calc = true
-    @repo_oid_cached = oid
+    $LOG.info "Found OID #{@repo_oid_cached} via URL #{@rec_key_cached}"
+    @repo_oid_cached
+  end
+
+  # Get OID composite key (eg. for external hash)
+  def get_oid_key
+    return nil unless @@repo_name
+    repo_oid unless @is_repo_oid_calc
+    [@@repo_name, @rec_key_cached, @is_deleted_cached]
+  end
+
+  # Get OID value (eg. for external hash)
+  def get_oid
+    repo_oid unless @is_repo_oid_calc
+    @repo_oid_cached
+  end
+
+  def self.oid_filename
+    "#{RifToWebsite::OID_FILENAME_PREFIX}.#{@@repo_name}.#{RifToWebsite::SERIAL_OBJECT}"
   end
 
   # Return an html string
