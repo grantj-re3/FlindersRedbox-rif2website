@@ -291,7 +291,7 @@ class OutWebPage
     $LOG.info "Record key is #{rec_key}"
 
     @rec_key_cached = rec_key
-    @is_deleted_cached = @rec_key_cached == REC_TYPE_DELETED
+    @is_deleted_cached = @rec_type == REC_TYPE_DELETED
 
     unless @@repo_oids
       if File.exists?(self.class.oid_filename)
