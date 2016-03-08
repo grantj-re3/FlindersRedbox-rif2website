@@ -282,12 +282,18 @@ class RifToWebsite
   end
 
   ############################################################################
+  # Write repo OIDs to external file which behaves as a cache (so that not
+  # all OIDs need to be looked up via handle.net http-redirects).
   def self.write_oids(repo_oids)
-    # Write repo OIDs to external file which behaves as a cache (so
-    # that not all OIDs need to be looked up via handle redirects).
-    # This is actually a merger of the cached file OIDs with any
-    # newly looked up OIDs if OutWebPage uses OIDs from file when
-    # they are available.
+    if File.exists?(oid_filename)
+      prev_oids = SERIAL_OBJECT.load(File.read(oid_filename))
+      # Merge: Any duplicate keys from repo_oids overwrite those from prev_oids.
+      # Although this seems safer, I suspect it is academic. If key exists in
+      # prev_oids and it has a bad value, we will use this cached bad value
+      # (so will not go to handle.net to get a new/good value). This bad
+      # scenario cannot occur unless someone edits the handle entry, hence ok.
+      repo_oids = prev_oids.merge(repo_oids)
+    end
     $LOG.info "Writing repo OIDs to file #{oid_filename}"
     obj = SERIAL_OBJECT.dump(repo_oids)
     File.write_string(oid_filename, obj)
