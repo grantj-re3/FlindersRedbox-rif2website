@@ -4,7 +4,7 @@
 
 A simple way of representing points and rectangles on a map in Research Data Australia (RDA) is to obtain GPS coordinates (ie. a WGS84 projection) of the point or rectangular-borders and represent them in ReDBox under dcmiPoint or iso19139dcmiBox in the Coverage tab when creating or editing a dataset.
 
-You can obtain the WGS84 coordinates (given by east and north values) as follows.
+You can obtain the WGS84 coordinates (given by east and north values) as follows. Note that __negative signs__ are important (to represent west and south) so must be used where applicable.
 
 - Use OpenStreetMap in the ReDBox Coverage tab; the coordinates pointed to with your mouse are shown at the bottom right (east first, then north).
 - Use http://www.openstreetmap.org:
@@ -13,7 +13,7 @@ You can obtain the WGS84 coordinates (given by east and north values) as follows
   * click "Manually select a different area" in the left pane
   * select a rectangle in the map
   * the grey rectangle in the left pane will show the northlimit, southlimit, westlimit and eastlimit (no need to click left Export button)
-- Use Google Maps as described by "Get the coordinates of a place" at https://support.google.com/maps/answer/18539?hl=en
+- Use Google Maps as described by "Get the coordinates of a place" [here](https://support.google.com/maps/answer/18539?hl=en). Google Maps gives north first, then east.
 
 Once your dataset is published in ReDBox and harvested into RDA, you should see a map with your point or rectangle shown on the corresponding page.
 
