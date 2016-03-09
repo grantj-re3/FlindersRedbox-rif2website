@@ -13,6 +13,7 @@ You can obtain the WGS84 coordinates (given by east and north values) as follows
   * click "Manually select a different area" in the left pane
   * select a rectangle in the map
   * the grey rectangle in the left pane will show the northlimit, southlimit, westlimit and eastlimit (no need to click left Export button)
+- Use Google Maps as described by "Get the coordinates of a place" at https://support.google.com/maps/answer/18539?hl=en
 
 Once your dataset is published in ReDBox and harvested into RDA, you should see a map with your point or rectangle shown on the corresponding page.
 
@@ -28,14 +29,12 @@ Once your dataset is published in ReDBox and harvested into RDA, you should see 
 
 ### References
 
-- http://openstreetmapdata.com/info/projections
-- http://www.openstreetmap.org
-
-- http://guides.ands.org.au/rda-cpg/coverage
-- http://guides.ands.org.au/rda-cpg/spatial
-- http://services.ands.org.au/documentation/rifcs/1.6.1/vocabs/vocabularies.html#Spatial_Type
-- http://dublincore.org/documents/dcmi-point/
-- http://dublincore.org/documents/dcmi-box/
-
-- http://www.pgc.umn.edu/tools/conversion
+- OpenStreetMap: http://openstreetmapdata.com/info/projections
+- OpenStreetMap: http://www.openstreetmap.org
+- RIF-CS: http://guides.ands.org.au/rda-cpg/coverage
+- RIF-CS: http://guides.ands.org.au/rda-cpg/spatial
+- RIF-CS: http://services.ands.org.au/documentation/rifcs/1.6.1/vocabs/vocabularies.html#Spatial_Type
+- DCMI point: http://dublincore.org/documents/dcmi-point/
+- DCMI box: http://dublincore.org/documents/dcmi-box/
+- Get coordinates from Google Maps: https://support.google.com/maps/answer/18539?hl=en
 
