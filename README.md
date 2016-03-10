@@ -46,7 +46,9 @@ Features
     (provided a full harvest has been performed in the past and there are no 'gaps'
     in the incremental harvest datestamps).
 - Use the RIF-CS key to lookup the Facinator OID:
-  * with redirect 1 level deep
+  * with redirect (from Handle.net) 1 level deep
+- Store Facinator OIDs in a local cache in order to bypass the (Handle.net) lookups above.
+  This results in a massive performance improvement (of 80 times on our test system).
 - If there is more than one OAI-PMH page of records, iterate through all pages by using the resumption token
 - Use the following config files (with hash elements which can be overwritten):
   * main (containing RIFCS URL, target root dir, target html-template, user-agent)
