@@ -129,6 +129,8 @@ validate_dir() {
 ##############################################################################
 get_oai_from() {
   oai_from=`date -u +%FT%TZ -d "$OAI_HOURS_AGO hours ago"`
+  oai_from_temp_utc=`echo "$oai_from" |sed 's/T/ /'`
+  oai_from_local_tz=`date "+%F %T %z" -d "$oai_from_temp_utc"`
 }
 
 ##############################################################################
@@ -183,7 +185,7 @@ for web_app in $WEB_APP_LIST; do
   if [ $incr_harvest = 1 ]; then
     get_oai_from
     cmd="$cmd --from $oai_from"
-    msg_extra=" (incremental from $oai_from)"
+    msg_extra="; incremental from $oai_from (ie. $oai_from_local_tz; $OAI_HOURS_AGO hours ago)"
   fi
   do_command "$cmd" $VERBOSE "Write *${web_app}* static pages to intermediate directory$msg_extra"
 
