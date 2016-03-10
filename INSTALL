@@ -205,19 +205,6 @@ Examine the results:
    as given in this Examples section.
  - Celebrate!
 
-Notes:
- - To minimise internet traffic (and so improve performance by a massive
-   amount) OID information is cached in the rif2website/var directory.
-   If at some point you wish to refresh all OID information from the
-   internet, you may safely delete the cache files oid.mint.* and
-   oid.redbox.*. These files are not intended to be manually edited.
- - For incremental harvests, summary information for md/r/index.html
-   and md/m/index.html are stored in the rif2website/var directory.
-   If the summary_status.redbox.* or summary_status.mint.* files
-   are deleted, the index.html files will probably be missing links
-   to some of the records. They can be rebuilt by performing a
-   full harvest. These files are not intended to be manually edited.
-
 3.2 SAMPLE INSTALLATION USING A TEMPLATE WITH EXTERNAL CSS
 
 The purpose of this sample is to:
@@ -257,7 +244,30 @@ After the first successful full harvest, you may choose to perform incremental h
 (ie. from a recent datestamp) instead of full harvests.
 
 
-3.4 CUSTOMISING YOUR WEB PAGE CONTENT
+3.4 OPERATIONAL NOTES
+
+1) Ideally, incremental harvests are performed from the last
+   successful harvest. However currently we do not use success to
+   determine the OAI-PMH harvest from-date. Instead we use the
+   variable OAI_HOURS_AGO (in bin/rif2website_wrap.sh) to set the
+   harvest from-date. Eg. If OAI_HOURS_AGO=72, the script will
+   harvest any ReDBox-Mint records which have been created or have
+   changed in the past 3 days (measured from the time the script is run).
+
+2) To minimise internet traffic (and so improve performance by a massive
+   amount) OID information is cached in the rif2website/var directory.
+   If at some point you wish to refresh all OID information from the
+   internet, you may safely delete the cache files oid.mint.* and
+   oid.redbox.*. These files are not intended to be manually edited.
+
+3) For incremental harvests, summary information for md/r/index.html
+   and md/m/index.html are stored in the rif2website/var directory.
+   If the summary_status.redbox.* or summary_status.mint.* files
+   are deleted, the index.html files will probably be missing links
+   to some of the records. They can be rebuilt by performing a
+   full harvest. These files are not intended to be manually edited.
+
+3.5 CUSTOMISING YOUR WEB PAGE CONTENT
 
 Web pages are created by substituting special text within
 an html template (eg. etc/metadata_record.tpl.html) with
@@ -298,7 +308,7 @@ Changing substitution text for other tags is beyond the scope of
 this document.
 
 
-3.4 CUSTOMISING YOUR WEB PAGE BRANDING
+3.6 CUSTOMISING YOUR WEB PAGE BRANDING
 
 To create a page which has branding suitable for your organisation, you need to:
 
