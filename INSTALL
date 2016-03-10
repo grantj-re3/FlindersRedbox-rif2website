@@ -179,7 +179,8 @@ It is important that the following 2 variables are identical:
    for ReDBox in etc/conf_main.rb
 
 # Run the program
-  ./rif2website_wrap.sh
+  bin/rif2website_wrap.sh --help
+  bin/rif2website_wrap.sh --full-harvest
 
 Examine the results:
  - Check for errors or issues displayed by the program output (stdout).
@@ -204,6 +205,18 @@ Examine the results:
    as given in this Examples section.
  - Celebrate!
 
+Notes:
+ - To minimise internet traffic (and so improve performance by a massive
+   amount) OID information is cached in the rif2website/var directory.
+   If at some point you wish to refresh all OID information from the
+   internet, you may safely delete the cache files oid.mint.* and
+   oid.redbox.*. These files are not intended to be manually edited.
+ - For incremental harvests, summary information for md/r/index.html
+   and md/m/index.html are stored in the rif2website/var directory.
+   If the summary_status.redbox.* or summary_status.mint.* files
+   are deleted, the index.html files will probably be missing links
+   to some of the records. They can be rebuilt by performing a
+   full harvest. These files are not intended to be manually edited.
 
 3.2 SAMPLE INSTALLATION USING A TEMPLATE WITH EXTERNAL CSS
 
@@ -238,7 +251,10 @@ After installing and testing this app (see the sample installation documentation
 you can run a scheduled job (cron job) with a configuration similar to that below.
 
   # Run job every hour from 8:20-18:20 Mon-Fri. Write stdout/stderr to a log file.
-  20 8-18 * * 1-5 $HOME/opt/rif2website/rif2website_wrap.sh >> $HOME/opt/rif2website/rif2website_wrap.log 2>&1
+  20 8-18 * * 1-5 $HOME/opt/rif2website/bin/rif2website_wrap.sh --full-harvest >> $HOME/opt/rif2website/log/rif2website_wrap.log 2>&1
+
+After the first successful full harvest, you may choose to perform incremental harvests
+(ie. from a recent datestamp) instead of full harvests.
 
 
 3.4 CUSTOMISING YOUR WEB PAGE CONTENT
