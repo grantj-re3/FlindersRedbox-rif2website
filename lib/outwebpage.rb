@@ -467,7 +467,7 @@ class OutWebPage
     highlighting_tags = LABELS_TO_HIGHLIGHT.include?(label) ? HTML_HIGHLIGHTING_TAGS : []
     str = ''
     @doc.elements.each(xpath.to_s_xpath){|e|
-      str += HtmlHelper.tr( [label, e.attributes.to_a.map{|v| v.to_s}.sort.join(','), e.text], true, {}, highlighting_tags )
+      str += HtmlHelper.tr( [label, e.attributes.to_a.map{|v| v.to_s}.sort.join(','), e.text.to_s], true, {}, highlighting_tags ) if e.text
     }
     str
   end
