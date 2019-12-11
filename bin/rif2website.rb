@@ -2,8 +2,8 @@
 #--
 # Usage: rif2website.rb  --mint | --redbox
 #
-# Copyright (c) 2013, Flinders University, South Australia. All rights reserved.
-# Contributors: eResearch@Flinders, Library, Information Services, Flinders University.
+# Copyright (c) 2013-2019, Flinders University, South Australia. All rights reserved.
+# Contributors: Library, Corporate  Services, Flinders University.
 # See the accompanying LICENSE file (or http://opensource.org/licenses/BSD-3-Clause).
 # 
 ##############################################################################
@@ -224,30 +224,39 @@ class RifToWebsite
     summary_recs = {}		# Stored records to support incremental update to summary of static pages
     repo_oids = {}		# Stored repo OIDs to reduce handle.net web traffic
     rec_regex_str = "^(#{RIF_RECORD_TYPES.join('|')})$"
+
+    # A 1 or 2 element array of XML namespace strings:
+    # - the namespace from the config, and
+    # - no namespace '' (if the config's namespace is not already '').
+    ns_prefixes = [ Config[:ns_prefix_rif] ]
+    ns_prefixes << '' unless Config[:ns_prefix_rif] == ''
+
     mgr = InRifPageManager.new(oai_from, oai_until)
     while mgr.next_page
-      # XPath points to the node where xmlns ("rif") is defined.
-      xpath_ns = "ListRecords/record/metadata/#{Config[:ns_prefix_rif]}registryObjects"
-      String.xpath_prefix = Config[:ns_prefix_rif]
+      ns_prefixes.each{|xml_ns|
+        # XPath points to the node where xmlns ("rif") is defined.
+        xpath_ns = "ListRecords/record/metadata/#{xml_ns}registryObjects"
+        String.xpath_prefix = xml_ns
 
-      # For non-retired (ie. OAI-PMH non-deleted) records
-      mgr.doc.root.elements.each(xpath_ns){|e|	# Each rifcs record
-        doc_record = REXML::Document.new(e.to_s)
-        doc_record.elements.each("registryObjects/registryObject/*".to_s_xpath){|e2|
-          if e2.name.match(rec_regex_str)
-            rec_type = "#{e2.name},#{e2.attributes['type']}"
-            #puts "$$$ #{e2.name}-#{e2.attributes['type']} = #{e2.inspect}\n\n"
-            #3.times{puts '=' *78}
-            out = OutWebPage.new(rec_type, doc_record)
-            if out.valid?
-              out.write_to_file
-              summary_recs[out.out_file_path] = {}
-              summary_recs[out.out_file_path][:deleted] = false
-              summary_recs[out.out_file_path][:html_empty] = out.to_s_html.empty?
-              summary_recs[out.out_file_path][:summary] = out.get_summary
-              repo_oids[out.get_oid_key] = out.get_oid
+        # For non-retired (ie. OAI-PMH non-deleted) records
+        mgr.doc.root.elements.each(xpath_ns){|e|	# Each rifcs record
+          doc_record = REXML::Document.new(e.to_s)
+          doc_record.elements.each("registryObjects/registryObject/*".to_s_xpath){|e2|
+            if e2.name.match(rec_regex_str)
+              rec_type = "#{e2.name},#{e2.attributes['type']}"
+              #puts "$$$ #{e2.name}-#{e2.attributes['type']} = #{e2.inspect}\n\n"
+              #3.times{puts '=' *78}
+              out = OutWebPage.new(rec_type, doc_record)
+              if out.valid?
+                out.write_to_file
+                summary_recs[out.out_file_path] = {}
+                summary_recs[out.out_file_path][:deleted] = false
+                summary_recs[out.out_file_path][:html_empty] = out.to_s_html.empty?
+                summary_recs[out.out_file_path][:summary] = out.get_summary
+                repo_oids[out.get_oid_key] = out.get_oid
+              end
             end
-          end
+          }
         }
       }
 
